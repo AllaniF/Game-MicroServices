@@ -1,0 +1,426 @@
+openapi: 3.0.1
+info:
+  title: Game API
+  description: API documentation for the game backend services.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /fight/calculate:
+    post:
+      summary: Perform fight calculations
+      tags:
+        - Fight
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                heroId:
+                  type: integer
+                currentHP:
+                  type: number
+                ATK:
+                  type: number
+              required:
+                - heroId
+      responses:
+        200:
+          description: Fight calculation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                  remainingHp:
+                    type: number
+
+  /entity/heroes:
+    get:
+      summary: Get a list of heroes
+      tags:
+        - Entity
+      responses:
+        200:
+          description: List of heroes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    level:
+                      type: integer
+                    dunjonNb:
+                      type: integer
+                    id:
+                      type: integer
+                    maxHP:
+                      type: integer
+                    gold:
+                      type: number
+                    ATK:
+                      type: number
+
+    post:
+      summary: Create a new hero
+      tags:
+        - Entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+      responses:
+        201:
+          description: Hero created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+
+  /entity/heroes/{heroId}:
+    put:
+      summary: Update an existing hero
+      tags:
+        - Entity
+      parameters:
+        - in: path
+          name: heroId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                level:
+                  type: integer
+                dunjonNb:
+                  type: integer
+                maxHP:
+                  type: integer
+                ATK:
+                  type: integer
+                gold:
+                  type: integer
+              required:
+                - name
+                - type
+                - level
+                - dunjonNb
+                - maxHP
+                - ATK
+                - gold
+      responses:
+        200:
+          description: Hero updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  level:
+                    type: integer
+                  dunjonNb:
+                    type: integer
+                  maxHP:
+                    type: integer
+                  ATK:
+                    type: integer
+                  gold:
+                    type: integer
+
+  /entity/enemy:
+    get:
+      summary: Get a list of enemies
+      tags:
+        - Entity
+      responses:
+        200:
+          description: List of enemies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    level:
+                      type: integer
+                    dunjonNb:
+                      type: integer
+                    id:
+                      type: integer
+                    maxHP:
+                      type: integer
+                    gold:
+                      type: number
+                    ATK:
+                      type: number
+
+  /game-state/selected-hero:
+    post:
+      summary: Store the selected hero
+      tags:
+        - Game State
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    level:
+                      type: integer
+                    dunjonNb:
+                      type: integer
+                    id:
+                      type: integer
+                    maxHP:
+                      type: integer
+                    gold:
+                      type: number
+                    ATK:
+                      type: number
+      responses:
+        200:
+          description: Stored selected hero
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                    name:
+                      type: string
+                    level:
+                      type: integer
+                    dunjonNb:
+                      type: integer
+                    id:
+                      type: integer
+                    maxHP:
+                      type: integer
+                    gold:
+                      type: number
+                    ATK:
+                      type: number
+
+  /game-state/map:
+    post:
+      summary: Store the selected map
+      tags:
+        - Game State
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: integer
+                    matrix:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: string
+
+      responses:
+        200:
+          description: Stored selected hero
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                    name:
+                      type: string
+                    id:
+                      type: integer
+                    matrix:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: string
+
+  /game-state/next-position:
+    post:
+      summary: Calculate the next position
+      tags:
+        - Game State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                direction:
+                  type: string
+              required:
+                - direction
+      responses:
+        200:
+          description: Next position calculated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nextPosition:
+                    type: object
+                    properties:
+                      x:
+                        type: number
+                      y:
+                        type: number
+                  isFighting:
+                    type: boolean
+                  isFinished:
+                    type: boolean
+                  currentHP:
+                    type: number
+                  ATK:
+                    type: number
+
+  /game-state/upgrade-hero:
+    post:
+      summary: Send the new stats for hero
+      tags:
+        - Game State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                upgrade:
+                  type: string
+              required:
+                - direction
+      responses:
+        200:
+          description: new stats for hero
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nextPosition:
+                    type: object
+                    properties:
+                      x:
+                        type: number
+                      y:
+                        type: number
+                  isFighting:
+                    type: boolean
+                  isFinished:
+                    type: boolean
+                  currentHP:
+                    type: number
+                  ATK:
+                    type: number
+
+  /logs:
+    post:
+      summary: Save log information
+      tags:
+        - Logs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logId:
+                  type: integer
+                message:
+                  type: string
+                timestamp:
+                  type: string
+              required:
+                - logId
+                - message
+                - timestamp
+      responses:
+        200:
+          description: Log saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /map/random:
+    get:
+      summary: Get a random map
+      tags:
+        - Map
+      responses:
+        200:
+          description: Random map selected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  matrix:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
