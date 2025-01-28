@@ -1,0 +1,33 @@
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile-postgres
+    container_name: mypostgresdb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: EntityDb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./Entity.sql:/docker-entrypoint-initdb.d/Entity.sql
+
+  java-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile-java  # Dockerfile-postgres for Java app
+    container_name: java-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/EntityDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: docker
+    depends_on:
+      - postgres
+
+
+volumes:
+  db_data:

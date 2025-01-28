@@ -1,0 +1,18 @@
+# Use the official OpenJDK 21 image as a base
+FROM openjdk:21-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy your Maven `pom.xml` and source code into the container
+COPY pom.xml /app/
+COPY src /app/src
+
+# Install Maven (if it's not in the base image already)
+RUN apt-get update && apt-get install -y maven
+
+# Run Maven to build the app (this will create the jar file)
+RUN mvn clean install
+
+# Set the command to run the application
+CMD ["java", "-jar", "target/your-app.jar"]
