@@ -18,10 +18,12 @@ services:
     image: postgres:latest
     container_name: map-postgres
     ports:
-      - "5004:5432"  # Maps port 5004 on the host to 5004 in the container
+      - "5004:5004"
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: postgres
+      POSTGRES_PORT: 5004  # Ensure PostgreSQL uses 5004 internally
+    command: [ "postgres", "-p", "5004" ]  # Explicitly set port in PostgreSQL
     volumes:
       - map_data:/var/lib/postgresql/data
       - ./map.sql:/docker-entrypoint-initdb.d/map.sql
