@@ -1,15 +1,15 @@
 
 services:
   postgres:
-    build:
-      context: demo
-      dockerfile: Dockerfile-postgres
+    image: postgres:latest
     container_name: mypostgresdb
     ports:
-      - "5432:5432"
+      - "5002:5002"
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: EntityDb
+      POSTGRES_PORT: 5002
+    command: [ "postgres", "-p", "5002" ]  # Explicitly set port in PostgreSQL
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./Entity.sql:/docker-entrypoint-initdb.d/init.sql
@@ -37,7 +37,7 @@ services:
     ports:
       - "8002:8002"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://mypostgresdb:5432/EntityDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_URL: jdbc:postgresql://mypostgresdb:5002/EntityDb  # Connection to PostgreSQL container
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: docker
     depends_on:
