@@ -31,7 +31,7 @@ services:
   rabbitmq:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-rabbitmq
     container_name: myrabbitmq
     ports:
       - "5672:5672"
@@ -41,6 +41,16 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    container_name: myfrontend
+    ports:
+      - "5173:5173"  # Change si nécessaire
+    depends_on:
+      - java-backend
 
 
 volumes:
