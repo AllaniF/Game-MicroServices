@@ -1,0 +1,99 @@
+
+services:
+  postgres:
+    build:
+      context: demo
+      dockerfile: Dockerfile-postgres
+    container_name: mypostgresdb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: EntityDb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./Entity.sql:/docker-entrypoint-initdb.d/init.sql
+
+  map-db:
+    image: postgres:latest
+    container_name: map-postgres
+    ports:
+      - "5004:5432"  # Maps port 5004 on the host to 5004 in the container
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: postgres
+    volumes:
+      - map_data:/var/lib/postgresql/data
+      - ./map.sql:/docker-entrypoint-initdb.d/map.sql
+
+
+  entity-service:
+    build:
+      context: Entity-Service
+      dockerfile: Dockerfile-entityservice
+    container_name: Entity-Service
+    ports:
+      - "8002:8002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://mypostgresdb:5432/EntityDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: docker
+    depends_on:
+      - postgres
+
+  fight-service:
+    build:
+      context: Fight-Service
+      dockerfile: Dockerfile-fightservice
+    container_name: Fight-service
+    ports:
+      - "8003:8003"
+
+  map-service:
+    build:
+      context: Map-Service
+      dockerfile: Dockerfile-mapservice
+    container_name: Map-service
+    ports:
+      - "8004:8004"
+
+
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: Dockerfile-rabbitmq
+    container_name: myrabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile-frontend
+    container_name: myfrontend
+    ports:
+      - "5173:5173"  # Change si nécessaire
+    depends_on:
+     - entity-service
+
+
+volumes:
+  db_data:
+  rabbitmq_data:
+  redis-data:
+  map_data:
