@@ -11,10 +11,10 @@ COPY package*.json ./
 RUN npm install
 
 # Copier le reste des fichiers du projet
-#COPY . .
+COPY . .
 
 # Exposer le port utilisé par ton application React/Vue/Angular (ex: 3000 pour React)
 EXPOSE 5173
 
 # Lancer l'application (modifie selon ton framework)
-CMD ["npm", "start"]
+CMD ["npm", "run","dev"]

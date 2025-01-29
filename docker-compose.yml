@@ -44,13 +44,13 @@ services:
 
   frontend:
     build:
-      context: .
+      context: frontend
       dockerfile: Dockerfile-frontend
     container_name: myfrontend
     ports:
       - "5173:5173"  # Change si nécessaire
     depends_on:
-      - java-backend
+     - java-backend
 
 
 volumes:
