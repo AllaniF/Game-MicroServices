@@ -418,7 +418,7 @@ paths:
                   message:
                     type: string
 
-  /map/random:
+  /map:
     get:
       summary: Get a random map
       tags:
