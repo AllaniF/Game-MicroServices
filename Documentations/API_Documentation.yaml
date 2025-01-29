@@ -98,17 +98,11 @@ paths:
                   name:
                     type: string
 
-  /entity/heroes/{heroId}:
+  /entity/heroes/:
     put:
       summary: Update an existing hero
       tags:
         - Entity
-      parameters:
-        - in: path
-          name: heroId
-          required: true
-          schema:
-            type: integer
       requestBody:
         required: true
         content:
@@ -124,7 +118,7 @@ paths:
                   type: integer
                 maxHP:
                   type: integer
-                ATK:
+                atk:
                   type: integer
                 gold:
                   type: integer
@@ -134,7 +128,7 @@ paths:
                 - level
                 - dunjonNb
                 - maxHP
-                - ATK
+                - atk
                 - gold
       responses:
         200:
