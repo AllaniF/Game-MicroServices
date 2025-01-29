@@ -5,18 +5,17 @@ const TILE_SIZE = 70;
 
 const Character = ({ position }) => {
   return (
-    <div
+    <img
+      src={character1}
+      alt="character"
       style={{
         position: "absolute",
-        left: `${position.x * TILE_SIZE}px`,
-        top: `${position.y * TILE_SIZE}px`,
-        width: TILE_SIZE,
-        height: TILE_SIZE,
-        transition: "0.2s ease-in-out",
+        top: position.y * TILE_SIZE,
+        left: position.x * TILE_SIZE,
+        width: "50px",  // 🔥 Personaje fijo en 60x60
+        height: "50px",
       }}
-    >
-      <img src={character1} alt="Character" style={{ width: "100%", height: "100%" }} />
-    </div>
+    />
   );
 };
 
