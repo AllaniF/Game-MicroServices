@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -21,4 +21,27 @@ const Home = () => {
   );
 };
 
+export default Home;*/
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+const Home = () => {
+  const navigate = useNavigate();
+
+  const handleSelectHero = () => {
+    navigate("/heroes"); // Ir a la página de selección de héroe
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", textAlign: "center" }}>
+      <h1>Bienvenido a la Aventura</h1>
+      <p>Selecciona un héroe para comenzar tu viaje.</p>
+      <button onClick={handleSelectHero} style={{ padding: "10px 20px", fontSize: "16px", cursor: "pointer", marginTop: "20px" }}>
+        Select Hero
+      </button>
+    </div>
+  );
+};
+
 export default Home;
+
