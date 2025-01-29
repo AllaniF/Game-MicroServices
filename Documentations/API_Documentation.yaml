@@ -43,10 +43,25 @@ paths:
               schema:
                 type: object
                 properties:
+                  heroID:
+                    type: integer
+                  heroRemainingHP:
+                    type: integer
+                  enemyRemainingHP:
+                    type: integer
                   result:
                     type: string
-                  remainingHp:
-                    type: number
+                  enemy:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      maxHP:
+                        type: integer
+                      atk:
+                        type: integer
+                  battleLog:
+                    type: string
 
   /entity/heroes:
     get:
