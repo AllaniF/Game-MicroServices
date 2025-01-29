@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from "react";
 
-// Importar las imágenes desde la carpeta assets
-import character from "../../assets/maincharacter3.jpg";
+// Importar las imágenes individuales usando ES Modules
+import character1 from "../../assets/characters/character1.png";
+import character2 from "../../assets/characters/character2.png";
+import character3 from "../../assets/characters/character3.png";
+
+import tree1 from "../../assets/trees/tree1.png";
+import tree2 from "../../assets/trees/tree2.png";
+import tree3 from "../../assets/trees/tree3.png";
+
+import grass1 from "../../assets/grass/grass1.png";
+import grass2 from "../../assets/grass/grass2.png";
+import grass3 from "../../assets/grass/grass3.png";
+
+import flower1 from "../../assets/flowers/flower1.png";
+import flower2 from "../../assets/flowers/flower2.png";
+
 import house from "../../assets/house.png";
-import tree from "../../assets/tree.png";
-import grass from "../../assets/grass.png";
-import flowers from "../../assets/flowers.jpg";
+
+const characters = [character1, character2, character3];
+const trees = [tree1, tree2, tree3];
+const grassTiles = [grass1, grass2, grass3];
+const flowersTiles = [flower1, flower2];
 
 // Matriz del mapa (puede ser importada desde un archivo separado)
 const mapMatrix = [
@@ -16,11 +32,11 @@ const mapMatrix = [
   ["E", "E", "E", "E", "E"],
 ];
 
-const TILE_SIZE = 100; // Tamaño de cada tile en píxeles
+const TILE_SIZE = 70; // Tamaño de cada tile en píxeles
 
 const getRandomTile = (type) => {
   if (type === "E") {
-    const options = [grass, flowers, null]; // Puede ser pasto, flores o vacío
+    const options = [...grassTiles, ...flowersTiles, null]; // Puede ser pasto, flores o vacío
     return options[Math.floor(Math.random() * options.length)];
   }
   return null;
@@ -32,6 +48,7 @@ const MapRenderer = () => {
       Array.from({ length: mapMatrix[0].length }, () => null)
     )
   );
+  const character = characters[Math.floor(Math.random() * characters.length)];
 
   useEffect(() => {
     const generatedTiles = mapMatrix.map((row) =>
@@ -52,11 +69,48 @@ const MapRenderer = () => {
       {mapMatrix.map((row, rowIndex) =>
         row.map((tile, colIndex) => {
           let imageSrc = null;
-          if (tile === "S") imageSrc = character;
-          else if (tile === "F") imageSrc = house;
-          else if (tile === "B") imageSrc = tree;
-          else if (tile === "E" && randomTiles[rowIndex] && randomTiles[rowIndex][colIndex])
-            imageSrc = randomTiles[rowIndex][colIndex];
+          let imageSize = "100%";
+
+          if (tile === "S") {
+            imageSrc = character;
+            imageSize = "50%";
+          } else if (tile === "F") {
+            imageSrc = house;
+          } else if (tile === "B") {
+            imageSrc = trees[Math.floor(Math.random() * trees.length)];
+          } else if (tile === "E" && randomTiles[rowIndex] && randomTiles[rowIndex][colIndex]) {
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                style={{
+                  width: TILE_SIZE,
+                  height: TILE_SIZE,
+                  display: "grid",
+                  gridTemplateColumns: "50% 50%",
+                  gridTemplateRows: "50% 50%",
+                  backgroundColor: `rgb(${50 + Math.random() * 50}, ${100 + Math.random() * 50}, 50)`,
+                }}
+              >
+                {[0, 1, 2, 3].map((i) => {
+                  const quadrantImage = [
+                    ...grassTiles,
+                    ...flowersTiles,
+                    null,
+                  ][Math.floor(Math.random() * (grassTiles.length + flowersTiles.length + 1))];
+                  return quadrantImage ? (
+                    <img
+                      key={i}
+                      src={quadrantImage}
+                      alt="grass/flower"
+                      style={{ width: "50%", height: "50%" }}
+                    />
+                  ) : (
+                    <div key={i}></div>
+                  );
+                })}
+              </div>
+            );
+          }
 
           return (
             <div
@@ -64,15 +118,17 @@ const MapRenderer = () => {
               style={{
                 width: TILE_SIZE,
                 height: TILE_SIZE,
-                backgroundColor: `rgb(${50 + Math.random() * 50}, ${100 +
-                  Math.random() * 50}, 50)`, // Variaciones de verde
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: `rgb(${50 + Math.random() * 50}, ${100 + Math.random() * 50}, 50)`,
               }}
             >
               {imageSrc && (
                 <img
                   src={imageSrc}
                   alt={tile}
-                  style={{ width: "100%", height: "100%" }}
+                  style={{ width: imageSize, height: imageSize }}
                 />
               )}
             </div>
