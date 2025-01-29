@@ -23,7 +23,7 @@ paths:
                   type: integer
                 currentHP:
                   type: number
-                ATK:
+                atk:
                   type: number
               required:
                 - heroId
@@ -69,7 +69,7 @@ paths:
                       type: integer
                     gold:
                       type: number
-                    ATK:
+                    atk:
                       type: number
 
     post:
@@ -150,7 +150,7 @@ paths:
                     type: integer
                   maxHP:
                     type: integer
-                  ATK:
+                  atk:
                     type: integer
                   gold:
                     type: integer
@@ -184,7 +184,7 @@ paths:
                       type: integer
                     gold:
                       type: number
-                    ATK:
+                    atk:
                       type: number
 
   /game-state/selected-hero:
