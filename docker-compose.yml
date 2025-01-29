@@ -14,6 +14,18 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./Entity.sql:/docker-entrypoint-initdb.d/init.sql
 
+  map-db:
+    image: postgres:latest
+    container_name: map-postgres
+    ports:
+      - "5004:5432"  # Maps port 5004 on the host to 5004 in the container
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: postgres
+    volumes:
+      - map_data:/var/lib/postgresql/data
+      - ./map.sql:/docker-entrypoint-initdb.d/map.sql
+
 
   entity-service:
     build:
@@ -36,6 +48,14 @@ services:
     container_name: Fight-service
     ports:
       - "8003:8003"
+
+  map-service:
+    build:
+      context: Map-Service
+      dockerfile: Dockerfile-mapservice
+    container_name: Map-service
+    ports:
+      - "8004:8004"
 
 
   redis:
@@ -76,3 +96,4 @@ volumes:
   db_data:
   rabbitmq_data:
   redis-data:
+  map_data:
