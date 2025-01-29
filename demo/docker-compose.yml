@@ -22,7 +22,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/EntityDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_URL: jdbc:postgresql://mypostgresdb:5432/EntityDb  # Connection to PostgreSQL container
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: docker
     depends_on:
