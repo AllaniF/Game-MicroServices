@@ -433,8 +433,6 @@ paths:
                 properties:
                   id:
                     type: integer
-                  name:
-                    type: string
                   matrix:
                     type: array
                     items:
