@@ -4,8 +4,16 @@ info:
   description: API documentation for the game backend services.
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
-    description: Local development server
+  - url: http://localhost:8000
+    description: Server for Frontend service
+  - url: http://localhost:8001/game-state/
+    description: Server for Game State service
+  - url: http://localhost:8002/entity/
+    description: Server for Entity service
+  - url: http://localhost:8003/fight/
+    description: Server for Fight service
+  - url: http://localhost:8004/map/
+    description: Server for Map service
 paths:
   /fight/calculate:
     post:
@@ -23,7 +31,7 @@ paths:
                   type: integer
                 currentHP:
                   type: number
-                ATK:
+                atk:
                   type: number
               required:
                 - heroId
@@ -35,10 +43,25 @@ paths:
               schema:
                 type: object
                 properties:
+                  heroID:
+                    type: integer
+                  heroRemainingHP:
+                    type: integer
+                  enemyRemainingHP:
+                    type: integer
                   result:
                     type: string
-                  remainingHp:
-                    type: number
+                  enemy:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      maxHP:
+                        type: integer
+                      atk:
+                        type: integer
+                  battleLog:
+                    type: string
 
   /entity/heroes:
     get:
@@ -69,7 +92,7 @@ paths:
                       type: integer
                     gold:
                       type: number
-                    ATK:
+                    atk:
                       type: number
 
     post:
@@ -98,17 +121,11 @@ paths:
                   name:
                     type: string
 
-  /entity/heroes/{heroId}:
+  /entity/heroes/:
     put:
       summary: Update an existing hero
       tags:
         - Entity
-      parameters:
-        - in: path
-          name: heroId
-          required: true
-          schema:
-            type: integer
       requestBody:
         required: true
         content:
@@ -124,7 +141,7 @@ paths:
                   type: integer
                 maxHP:
                   type: integer
-                ATK:
+                atk:
                   type: integer
                 gold:
                   type: integer
@@ -134,7 +151,7 @@ paths:
                 - level
                 - dunjonNb
                 - maxHP
-                - ATK
+                - atk
                 - gold
       responses:
         200:
@@ -156,7 +173,7 @@ paths:
                     type: integer
                   maxHP:
                     type: integer
-                  ATK:
+                  atk:
                     type: integer
                   gold:
                     type: integer
@@ -190,7 +207,7 @@ paths:
                       type: integer
                     gold:
                       type: number
-                    ATK:
+                    atk:
                       type: number
 
   /game-state/selected-hero:
@@ -401,7 +418,7 @@ paths:
                   message:
                     type: string
 
-  /map/random:
+  /map:
     get:
       summary: Get a random map
       tags:
@@ -416,8 +433,6 @@ paths:
                 properties:
                   id:
                     type: integer
-                  name:
-                    type: string
                   matrix:
                     type: array
                     items:
