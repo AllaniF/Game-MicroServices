@@ -1,5 +1,6 @@
 package com.example.gamestate.controller;
 
+import com.example.gamestate.dto.CombatResultRequest;
 import com.example.gamestate.dto.NextPositionResponse;
 import com.example.gamestate.model.*;
 import com.example.gamestate.service.GameStateService;
@@ -56,5 +57,11 @@ public class GameStateController {
     @PostMapping("/next-position")
     public NextPositionResponse getNextPosition(@RequestBody Direction directionRequest) {
         return gameStateService.getNextPosition(directionRequest.getDirection(), gameStateService.getGame());
+    }
+
+    @PostMapping("/combat-results")
+    public String saveCombatResults(@RequestBody CombatResultRequest request) {
+        gameStateService.updateHeroHp(request.getRemainingHp());
+        return "Hero HP updated successfully!";
     }
 }

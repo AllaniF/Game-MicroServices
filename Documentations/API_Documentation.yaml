@@ -313,12 +313,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  remainingHp:
-                    type: number
-                required:
-                  - remainingHp
+                type: string
+                example: Hero HP updated successfully!
+
 
   /game-state/upgrade-hero:
     post:

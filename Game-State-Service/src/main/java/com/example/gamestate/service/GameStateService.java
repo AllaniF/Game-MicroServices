@@ -109,4 +109,15 @@ public class GameStateService {
             default -> throw new IllegalArgumentException("Invalid direction");
         };
     }
+
+    public void updateHeroHp(int remainingHp) {
+        Game game = getGame();
+
+        if (game != null && game.getHero() != null) {
+            Hero hero = game.getHero();
+            hero.setCurrentHP(remainingHp);
+            saveHero(hero);
+            saveGame(game); // Save back to Redis
+        }
+    }
 }
