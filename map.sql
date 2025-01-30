@@ -1,5 +1,3 @@
-
-DROP TABLE IF EXISTS map;
 CREATE TABLE IF NOT EXISTS map (
                                    id SERIAL PRIMARY KEY,
                                    matrix JSONB NOT NULL  -- Use JSONB for efficient storage and querying

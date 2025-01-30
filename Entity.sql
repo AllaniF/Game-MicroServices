@@ -1,5 +1,4 @@
 
-DROP TABLE IF EXISTS Entity;
 
 CREATE TABLE IF NOT EXISTS Entity (
     ID SERIAL PRIMARY KEY,  -- Auto-incrementing ID
