@@ -28,6 +28,17 @@ services:
       - map_data:/var/lib/postgresql/data
       - ./map.sql:/docker-entrypoint-initdb.d/map.sql
 
+  game-state-service:
+    build:
+      context: Game-State-Service
+      dockerfile: Dockerfile-gamestateservice
+    container_name: Game-State-Service
+    ports:
+      - "8001:8001"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - rabbitmq
 
   entity-service:
     build:
@@ -63,13 +74,12 @@ services:
 
 
   redis:
-    image: redis:latest
+    build:
+      context: Game-State-Service
+      dockerfile: Dockerfile-redis
     container_name: redis-server
     ports:
       - "6379:6379"
-    volumes:
-      - redis-data:/data
-
 
   rabbitmq:
     build:

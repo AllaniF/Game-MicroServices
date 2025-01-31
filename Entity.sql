@@ -1,5 +1,3 @@
-
-
 CREATE TABLE IF NOT EXISTS Entity (
     ID SERIAL PRIMARY KEY,  -- Auto-incrementing ID
     Name VARCHAR(255) NOT NULL,

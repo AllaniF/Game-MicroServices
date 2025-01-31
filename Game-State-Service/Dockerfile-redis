@@ -1,0 +1,5 @@
+#Use the official Redis image
+FROM redis:latest
+
+#Disable persistence in Redis configuration
+CMD ["redis-server", "--save", "''", "--appendonly", "no"]
