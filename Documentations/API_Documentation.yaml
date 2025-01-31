@@ -121,63 +121,6 @@ paths:
                   name:
                     type: string
 
-  /entity/heroes/:
-    put:
-      summary: Update an existing hero
-      tags:
-        - Entity
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                level:
-                  type: integer
-                dunjonNb:
-                  type: integer
-                maxHP:
-                  type: integer
-                atk:
-                  type: integer
-                gold:
-                  type: integer
-              required:
-                - name
-                - type
-                - level
-                - dunjonNb
-                - maxHP
-                - atk
-                - gold
-      responses:
-        200:
-          description: Hero updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  type:
-                    type: string
-                  level:
-                    type: integer
-                  dunjonNb:
-                    type: integer
-                  maxHP:
-                    type: integer
-                  atk:
-                    type: integer
-                  gold:
-                    type: integer
-
   /entity/enemy:
     get:
       summary: Get a list of enemies
@@ -219,47 +162,31 @@ paths:
         required: true
         content:
           application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    level:
-                      type: integer
-                    dunjonNb:
-                      type: integer
-                    id:
-                      type: integer
-                    maxHP:
-                      type: integer
-                    gold:
-                      type: number
-                    ATK:
-                      type: number
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                level:
+                  type: integer
+                dunjonNb:
+                  type: integer
+                id:
+                  type: integer
+                maxHP:
+                  type: integer
+                gold:
+                  type: number
+                atk:
+                  type: number
       responses:
         200:
           description: Stored selected hero
           content:
-            application/json:
+            text/plain:
               schema:
-                type: array
-                properties:
-                    name:
-                      type: string
-                    level:
-                      type: integer
-                    dunjonNb:
-                      type: integer
-                    id:
-                      type: integer
-                    maxHP:
-                      type: integer
-                    gold:
-                      type: number
-                    ATK:
-                      type: number
+                type: string
+                example: Hero saved successfully!
 
   /game-state/map:
     post:
@@ -270,40 +197,25 @@ paths:
         required: true
         content:
           application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                matrix:
+                  type: array
+                  items:
+                    type: array
+                    items:
                       type: string
-                    id:
-                      type: integer
-                    matrix:
-                      type: array
-                      items:
-                        type: array
-                        items:
-                          type: string
-
       responses:
         200:
-          description: Stored selected hero
+          description: Stored selected map
           content:
-            application/json:
+            text/plain:
               schema:
-                type: array
-                properties:
-                    name:
-                      type: string
-                    id:
-                      type: integer
-                    matrix:
-                      type: array
-                      items:
-                        type: array
-                        items:
-                          type: string
+                type: string
+                example: Game map saved successfully!
 
   /game-state/next-position:
     post:
@@ -319,6 +231,11 @@ paths:
               properties:
                 direction:
                   type: string
+                  enum:
+                    - "up"
+                    - "down"
+                    - "left"
+                    - "right"
               required:
                 - direction
       responses:
@@ -345,6 +262,32 @@ paths:
                   ATK:
                     type: number
 
+  /game-state/combat-results:
+    post:
+      summary: Store the remaining HP
+      tags:
+        - Game State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remainingHp:
+                  type: number
+              required:
+                - remainingHp
+      responses:
+        200:
+          description: Stored remaining HP
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Hero HP updated successfully!
+
+
   /game-state/upgrade-hero:
     post:
       summary: Send the new stats for hero
@@ -359,31 +302,19 @@ paths:
               properties:
                 upgrade:
                   type: string
+                  enum:
+                    - "hp"
+                    - "atk"
               required:
-                - direction
+                - upgrade
       responses:
         200:
           description: new stats for hero
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  nextPosition:
-                    type: object
-                    properties:
-                      x:
-                        type: number
-                      y:
-                        type: number
-                  isFighting:
-                    type: boolean
-                  isFinished:
-                    type: boolean
-                  currentHP:
-                    type: number
-                  ATK:
-                    type: number
+                type: string
+                example: New stats for hero updated successfully!
 
   /logs:
     post:
