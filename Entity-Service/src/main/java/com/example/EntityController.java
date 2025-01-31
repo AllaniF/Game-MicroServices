@@ -31,15 +31,15 @@ public class EntityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdHero); // 201 Created
     }
 
-    @PutMapping("/heroes")  // No {heroId} in the path
-    public ResponseEntity<Entity> updateHero(@RequestBody Entity entityDetails) {
-        if (entityDetails.getId() == null) {
-            return ResponseEntity.badRequest().body(null); // Or a more informative error
-        }
-
-        Entity updatedHero = entityService.updateHero(entityDetails); // Pass the whole entity
-        return ResponseEntity.ok(updatedHero);
-    }
+//    @PutMapping("/heroes")  // No {heroId} in the path
+//    public ResponseEntity<Entity> updateHero(@RequestBody Entity entityDetails) {
+//        if (entityDetails.getId() == null) {
+//            return ResponseEntity.badRequest().body(null); // Or a more informative error
+//        }
+//
+//        Entity updatedHero = entityService.updateHero(entityDetails); // Pass the whole entity
+//        return ResponseEntity.ok(updatedHero);
+//    }
 
     @GetMapping("/enemy")
     public List<Entity> getAllEnemies() {
