@@ -339,23 +339,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  nextPosition:
-                    type: object
-                    properties:
-                      x:
-                        type: number
-                      y:
-                        type: number
-                  isFighting:
-                    type: boolean
-                  isFinished:
-                    type: boolean
-                  currentHP:
-                    type: number
-                  ATK:
-                    type: number
+                type: string
+                example: New stats for hero updated successfully!
 
   /logs:
     post:

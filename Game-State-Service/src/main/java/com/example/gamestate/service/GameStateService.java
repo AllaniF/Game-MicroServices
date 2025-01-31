@@ -120,4 +120,29 @@ public class GameStateService {
             saveGame(game); // Save back to Redis
         }
     }
+
+    public void upgradeHero(String upgradeType) {
+        Game game = getGame();
+
+        if (game != null && game.getHero() != null) {
+            Hero hero = game.getHero();
+
+            switch (upgradeType.toLowerCase()) {
+                case "hp":
+                    int newHP = (int) (hero.getMaxHP() * 1.1); // Increase HP by 10%
+                    hero.setMaxHP(newHP);
+                    saveHero(hero);
+                    break;
+                case "atk":
+                    int newATK = (int) (hero.getAtk() * 1.05); // Increase ATK by 5%
+                    hero.setAtk(newATK);
+                    saveHero(hero);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid upgrade type: " + upgradeType);
+            }
+
+            saveGame(game); // Save the updated hero back to Redis
+        }
+    }
 }

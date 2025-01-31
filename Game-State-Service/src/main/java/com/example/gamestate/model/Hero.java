@@ -47,5 +47,9 @@ public class Hero implements Serializable {
     public int getCurrentHP() { return currentHP; }
 
     public void setCurrentHP(int currentHP) {this.currentHP = currentHP;}
+
+    public void setAtk(int i) { this.atk = i; }
+
+    public void setMaxHP(int i) { this.maxHP = i; }
 }
 

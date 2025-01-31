@@ -2,6 +2,7 @@ package com.example.gamestate.controller;
 
 import com.example.gamestate.dto.CombatResultRequest;
 import com.example.gamestate.dto.NextPositionResponse;
+import com.example.gamestate.dto.UpgradeHeroRequest;
 import com.example.gamestate.model.*;
 import com.example.gamestate.service.GameStateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,11 @@ public class GameStateController {
     public String saveCombatResults(@RequestBody CombatResultRequest request) {
         gameStateService.updateHeroHp(request.getRemainingHp());
         return "Hero HP updated successfully!";
+    }
+
+    @PostMapping("/upgrade-hero")
+    public String upgradeHero(@RequestBody UpgradeHeroRequest request) {
+        gameStateService.upgradeHero(request.getUpgrade());
+        return "New stats for hero updated successfully!";
     }
 }
