@@ -51,5 +51,9 @@ public class Hero implements Serializable {
     public void setAtk(int i) { this.atk = i; }
 
     public void setMaxHP(int i) { this.maxHP = i; }
+
+    public void setDunjunNb(int i) { this.dunjonNb = i; }
+
+    public void setLevel(int i) { this.level = i; }
 }
 

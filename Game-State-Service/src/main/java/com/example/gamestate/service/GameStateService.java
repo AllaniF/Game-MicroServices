@@ -1,5 +1,6 @@
 package com.example.gamestate.service;
 
+import com.example.gamestate.dto.GameStateDTO;
 import com.example.gamestate.dto.NextPositionResponse;
 import com.example.gamestate.model.Game;
 import com.example.gamestate.model.GameMap;
@@ -7,6 +8,7 @@ import com.example.gamestate.model.Hero;
 import com.example.gamestate.model.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -16,9 +18,14 @@ import java.util.Random;
 public class GameStateService {
 
     private static final String GAME_KEY = "game_state";
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    public GameStateService(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     public void saveGame(Game game) {
         redisTemplate.opsForValue().set(GAME_KEY, game);
@@ -131,18 +138,46 @@ public class GameStateService {
                 case "hp":
                     int newHP = (int) (hero.getMaxHP() * 1.1); // Increase HP by 10%
                     hero.setMaxHP(newHP);
-                    saveHero(hero);
                     break;
                 case "atk":
                     int newATK = (int) (hero.getAtk() * 1.05); // Increase ATK by 5%
                     hero.setAtk(newATK);
-                    saveHero(hero);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid upgrade type: " + upgradeType);
             }
 
+            hero.setDunjunNb(hero.getDunjonNb() +1 );
+            hero.setLevel(hero.getLevel() +1 );
+            saveHero(hero);
+
             saveGame(game); // Save the updated hero back to Redis
         }
+
+        GameStateDTO gameStateDTO = createGameStateDTO();
+        sendGameStateToQueue(gameStateDTO);
+
+    }
+
+    private GameStateDTO createGameStateDTO() {
+        // Get game state
+        Game game = getGame();
+        Hero hero = game.getHero();
+
+        GameStateDTO gameStateDTO = new GameStateDTO();
+
+        // Setting every information needed to update the hero
+        gameStateDTO.setId(hero.getId());
+        gameStateDTO.setLevel(hero.getLevel());
+        gameStateDTO.setDunjonNb(hero.getDunjonNb());
+        gameStateDTO.setMaxHP(hero.getMaxHP());
+        gameStateDTO.setAtk(hero.getAtk());
+        gameStateDTO.setGold(hero.getGold());
+
+        return  gameStateDTO;
+    }
+
+    private void sendGameStateToQueue(GameStateDTO gameStateDTO) {
+        rabbitTemplate.convertAndSend("update-hero-queue", gameStateDTO);
     }
 }
