@@ -4,8 +4,16 @@ info:
   description: API documentation for the game backend services.
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
-    description: Local development server
+  - url: http://localhost:8000
+    description: Server for Frontend service
+  - url: http://localhost:8001/game-state/
+    description: Server for Game State service
+  - url: http://localhost:8002/entity/
+    description: Server for Entity service
+  - url: http://localhost:8003/fight/
+    description: Server for Fight service
+  - url: http://localhost:8004/map/
+    description: Server for Map service
 paths:
   /fight/calculate:
     post:
