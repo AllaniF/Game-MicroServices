@@ -265,6 +265,11 @@ paths:
               properties:
                 direction:
                   type: string
+                  enum:
+                    - "up"
+                    - "down"
+                    - "left"
+                    - "right"
               required:
                 - direction
       responses:
@@ -331,8 +336,11 @@ paths:
               properties:
                 upgrade:
                   type: string
+                  enum:
+                    - "hp"
+                    - "atk"
               required:
-                - direction
+                - upgrade
       responses:
         200:
           description: new stats for hero
