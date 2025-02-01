@@ -1,6 +1,7 @@
 package com.example.gamestate.service;
 
 import com.example.gamestate.dto.GameStateDTO;
+import com.example.gamestate.dto.LogDTO;
 import com.example.gamestate.dto.NextPositionResponse;
 import com.example.gamestate.model.Game;
 import com.example.gamestate.model.GameMap;
@@ -11,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Random;
 
@@ -179,5 +182,21 @@ public class GameStateService {
 
     private void sendGameStateToQueue(GameStateDTO gameStateDTO) {
         rabbitTemplate.convertAndSend("update-hero-queue", gameStateDTO);
+    }
+
+    public void sendLogsToQueue(String log) {
+        // Get hero
+        Game game = getGame();
+        Hero hero = game.getHero();
+
+        LogDTO logDTO = new LogDTO();
+
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+
+        logDTO.setTimestamp(timestamp);
+        logDTO.setId(hero.getId());
+        logDTO.setLog(log);
+
+        rabbitTemplate.convertAndSend("logs-queue", logDTO);
     }
 }
