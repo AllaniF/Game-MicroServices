@@ -14,7 +14,7 @@ public class LogListener {
         this.logService = logService;
     }
 
-    @RabbitListener(queues = "log-queue")
+    @RabbitListener(queues = "logs-queue")
     public void receiveLogMessage(Log log) {
         logService.saveLog(log);  // Save log to database
     }

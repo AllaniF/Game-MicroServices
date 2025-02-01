@@ -109,7 +109,7 @@ services:
     image: postgres:latest
     container_name: log-postgres
     ports:
-      - "5004:5004"
+      - "5005:5005"
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: LogDb
@@ -125,7 +125,7 @@ services:
       dockerfile: Dockerfile-logservice
     container_name: Log-Service
     ports:
-      - "8002:8002"
+      - "8005:8005"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://log-postgres:5005/LogDb  # Connection to PostgreSQL container
       SPRING_DATASOURCE_USERNAME: postgres

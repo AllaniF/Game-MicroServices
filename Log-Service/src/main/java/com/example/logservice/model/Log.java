@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 @Table(name = "logs")
 public class Log {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String timestamp;
     private Integer heroID;
     private String log;
