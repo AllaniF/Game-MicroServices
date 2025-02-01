@@ -33,6 +33,7 @@ public class GameStateController {
     public String storeHero(@RequestBody Hero hero) {
         hero.setCurrentHP(hero.getMaxHP());
         gameStateService.saveHero(hero);
+        gameStateService.sendLogsToQueue("Hero saved successfully!");
         return "Hero saved successfully!";
     }
 
@@ -46,6 +47,7 @@ public class GameStateController {
     @PostMapping("/map")
     public String storeMap(@RequestBody GameMap gameMap) {
         gameStateService.saveMap(gameMap);
+        gameStateService.sendLogsToQueue("Game map saved successfully!");
         return "Game map saved successfully!";
     }
 
@@ -57,18 +59,23 @@ public class GameStateController {
 
     @PostMapping("/next-position")
     public NextPositionResponse getNextPosition(@RequestBody Direction directionRequest) {
-        return gameStateService.getNextPosition(directionRequest.getDirection(), gameStateService.getGame());
+        NextPositionResponse nextPositionResponse = gameStateService
+                .getNextPosition(directionRequest.getDirection(), gameStateService.getGame());
+        gameStateService.sendLogsToQueue("Next position calculated successfully!");
+        return nextPositionResponse;
     }
 
     @PostMapping("/combat-results")
     public String saveCombatResults(@RequestBody CombatResultRequest request) {
         gameStateService.updateHeroHp(request.getRemainingHp());
+        gameStateService.sendLogsToQueue("Combat results saved successfully!");
         return "Hero HP updated successfully!";
     }
 
     @PostMapping("/upgrade-hero")
     public String upgradeHero(@RequestBody UpgradeHeroRequest request) {
         gameStateService.upgradeHero(request.getUpgrade());
+        gameStateService.sendLogsToQueue("Hero upgraded successfully!");
         return "New stats for hero updated successfully!";
     }
 }
