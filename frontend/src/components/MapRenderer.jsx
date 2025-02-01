@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { getMap } from "../services/mapService"; // Importa la función que obtiene el mapa
 import house from "../../assets/house.png";
 import tree1 from "../../assets/trees/tree1.png";
 import tree2 from "../../assets/trees/tree2.png";
@@ -12,14 +13,6 @@ import flower2 from "../../assets/flowers/flower2.png";
 const trees = [tree1, tree2, tree3];
 const grassTiles = [grass1, grass2, grass3];
 const flowersTiles = [flower1, flower2];
-
-const mapMatrix = [
-  ["E", "E", "B", "E", "F"],
-  ["E", "B", "E", "B", "E"],
-  ["E", "E", "E", "E", "E"],
-  ["B", "E", "B", "E", "B"],
-  ["E", "E", "E", "E", "E"],
-];
 
 const TILE_SIZE = 70;
 
@@ -35,7 +28,23 @@ const getRandomTile = (type) => {
 };
 
 const MapRenderer = () => {
-  // ⚡ Usamos useMemo para que el mapa solo se genere UNA VEZ
+  const [mapMatrix, setMapMatrix] = useState([]);
+
+  useEffect(() => {
+    const fetchMap = async () => {
+      try {
+        const data = await getMap();
+        if (data && data.matrix && data.matrix.matrix) {
+          setMapMatrix(data.matrix.matrix);
+        }
+      } catch (error) {
+        console.error("Error loading map:", error);
+      }
+    };
+
+    fetchMap();
+  }, []);
+
   const renderedMap = useMemo(() => {
     return mapMatrix.map((row, rowIndex) =>
       row.map((tile, colIndex) => {
@@ -62,7 +71,6 @@ const MapRenderer = () => {
                   backgroundColor: backgroundColor,
                 }}
               >
-                {/* Se generan 4 cuadrantes con césped o flores aleatorios */}
                 {[0, 1, 2, 3].map((i) => {
                   const quadrantImage =
                     [...grassTiles, ...flowersTiles, null][
@@ -88,7 +96,7 @@ const MapRenderer = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: backgroundColor, // Fondo fijo generado una vez
+              backgroundColor: backgroundColor,
             }}
           >
             {imageSrc && <img src={imageSrc} alt={tile} style={{ width: imageSize, height: imageSize }} />}
@@ -96,13 +104,13 @@ const MapRenderer = () => {
         );
       })
     );
-  }, []); // 🔥 useMemo asegura que este código solo se ejecute una vez
+  }, [mapMatrix]);
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${mapMatrix[0].length}, ${TILE_SIZE}px)`,
+        gridTemplateColumns: `repeat(${mapMatrix.length > 0 ? mapMatrix[0].length : 0}, ${TILE_SIZE}px)`,
         gridTemplateRows: `repeat(${mapMatrix.length}, ${TILE_SIZE}px)`,
         backgroundColor: "#2d6a4f",
       }}
