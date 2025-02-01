@@ -1,10 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0', // Bind to all IP addresses
+    host: "0.0.0.0", // Permite que el frontend sea accesible desde otros contenedores
+    port: 5173,
+    strictPort: true,
   },
-})
+});

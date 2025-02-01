@@ -1,119 +1,161 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate para redirigir
-import { getHeroes, createHero } from "../services/heroService";
+import { useNavigate } from "react-router-dom";
+import { getHeroes, createHero } from "../services/entityService";
 
 const HeroManager = () => {
-  const [heroes, setHeroes] = useState([]); // Lista de héroes
-  const [newHeroName, setNewHeroName] = useState(""); // Nombre del nuevo héroe
-  const [isCreating, setIsCreating] = useState(false); // Estado de creación
-  const [selectedHero, setSelectedHero] = useState(null); // Héroe seleccionado
-  const navigate = useNavigate(); // Hook para redirigir a otra página
+  const [heroes, setHeroes] = useState([]);
+  const [newHeroName, setNewHeroName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [selectedHero, setSelectedHero] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const navigate = useNavigate();
 
-  // Cargar héroes al montar el componente
+  // Load heroes when the component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getHeroes();
-      setHeroes(data);
+    const fetchHeroes = async () => {
+      setLoading(true);
+      setErrorMessage(null);
+      try {
+        const data = await getHeroes();
+        setHeroes(data);
+      } catch (error) {
+        setErrorMessage("Error retrieving heroes. Please check the API.");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchData();
+
+    fetchHeroes();
   }, []);
 
-  // Manejar la creación de héroes
+  // Handle hero creation
   const handleCreateHero = async () => {
-    if (!newHeroName) return;
+    // Clear previous messages
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
-    const newHero = await createHero(newHeroName);
-    setHeroes((prev) => [...prev, newHero]); // Agregar héroe a la lista
-    setNewHeroName(""); // Limpiar el campo de entrada
-    setIsCreating(false); // Salir del modo de creación
+    if (!newHeroName.trim()) {
+      setErrorMessage("Hero name cannot be empty.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const newHero = await createHero(newHeroName);
+      // Add the new hero to the list
+      setHeroes((prevHeroes) => [...prevHeroes, newHero]);
+      // Automatically select the new hero
+      setSelectedHero(newHero);
+      // Reset the form
+      setNewHeroName("");
+      setIsCreating(false);
+      // Show success message
+      setSuccessMessage("Hero created successfully.");
+    } catch (error) {
+      setErrorMessage("Error creating hero. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Manejar la selección de un héroe
+  // Handle hero selection from the dropdown
   const handleSelectHero = (heroId) => {
-    const hero = heroes.find((h) => h.id === parseInt(heroId));
+    const hero = heroes.find((h) => h.id === parseInt(heroId, 10));
     setSelectedHero(hero);
   };
 
-  // Cancelar la creación
-  const handleCancelCreate = () => {
-    setNewHeroName(""); // Limpiar el nombre ingresado
-    setIsCreating(false); // Salir del modo de creación
-  };
-
-  // Navegar a Home
-  const handleGoHome = () => {
-    navigate("/"); // Redirige a la página de inicio
+  // Start game with the selected hero
+  const handleStartGame = () => {
+    if (selectedHero) {
+      navigate("/game", { state: { hero: selectedHero } });
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold mb-4">Gestión de Héroes</h1>
+      <h1 className="text-2xl font-bold mb-4">Select or Create a Hero</h1>
 
-      {/* Lista desplegable */}
-      <select
-        className="p-2 border rounded mb-4 w-64"
-        defaultValue=""
-        onChange={(e) => handleSelectHero(e.target.value)}
-      >
-        <option value="" disabled>
-          Selecciona un héroe
-        </option>
-        {heroes.map((hero) => (
-          <option key={hero.id} value={hero.id}>
-            {hero.name}
-          </option>
-        ))}
-      </select>
+      {/* Display error or success messages */}
+      {errorMessage && <p className="text-red-500 mb-2">{errorMessage}</p>}
+      {successMessage && <p className="text-green-500 mb-2">{successMessage}</p>}
 
-      {/* Detalles del héroe seleccionado */}
+      {loading ? (
+        <p>Loading heroes...</p>
+      ) : (
+        <>
+          <select
+            className="p-2 border rounded mb-4 w-64"
+            defaultValue={selectedHero ? selectedHero.id : ""}
+            onChange={(e) => handleSelectHero(e.target.value)}
+          >
+            <option value="" disabled>
+              Select a hero
+            </option>
+            {heroes.length > 0 ? (
+              heroes.map((hero) => (
+                <option key={hero.id} value={hero.id}>
+                  {hero.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No heroes available</option>
+            )}
+          </select>
+        </>
+      )}
+
+      {/* Display selected hero details */}
       {selectedHero && (
         <div className="border p-4 rounded bg-white shadow-md w-64 mt-4">
-          <h2 className="text-xl font-bold mb-2">Detalles del Héroe</h2>
+          <h2 className="text-xl font-bold mb-2">Hero Details</h2>
           <p>
-            <strong>Nombre:</strong> {selectedHero.name}
+            <strong>Name:</strong> {selectedHero.name}
           </p>
           <p>
-            <strong>Tipo:</strong> {selectedHero.type}
+            <strong>Level:</strong> {selectedHero.level}
           </p>
           <p>
-            <strong>Nivel:</strong> {selectedHero.level}
+            <strong>Max HP:</strong> {selectedHero.maxHP}
           </p>
           <p>
-            <strong>HP Máximo:</strong> {selectedHero.maxHP}
+            <strong>Gold:</strong> {selectedHero.gold}
           </p>
           <p>
-            <strong>Oro:</strong> {selectedHero.gold}
+            <strong>Attack:</strong> {selectedHero.atk}
           </p>
-          <p>
-            <strong>ATAQUE:</strong> {selectedHero.ATK}
-          </p>
-          {/* Botón Select */}
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 w-full"
-            onClick={handleGoHome}
+            onClick={handleStartGame}
           >
-            Select
+            Start Game
           </button>
         </div>
       )}
 
-      {/* Botón Create */}
+      {/* Button to show the form for creating a new hero */}
       {!isCreating && (
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4"
-          onClick={() => setIsCreating(true)}
+          onClick={() => {
+            setIsCreating(true);
+            // Clear messages when opening the form
+            setErrorMessage(null);
+            setSuccessMessage(null);
+          }}
         >
-          Create new Hero
+          Create Hero
         </button>
       )}
 
-      {/* Campo para crear héroe */}
+      {/* Form for creating a hero */}
       {isCreating && (
         <div className="flex flex-col items-center mt-4">
           <input
             type="text"
             className="p-2 border rounded mb-2 w-64"
-            placeholder="Nombre del héroe"
+            placeholder="Hero name"
             value={newHeroName}
             onChange={(e) => setNewHeroName(e.target.value)}
           />
@@ -121,12 +163,17 @@ const HeroManager = () => {
             <button
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               onClick={handleCreateHero}
+              disabled={loading}
             >
               Save
             </button>
             <button
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              onClick={handleCancelCreate}
+              onClick={() => {
+                setIsCreating(false);
+                setErrorMessage(null);
+                setSuccessMessage(null);
+              }}
             >
               Cancel
             </button>
