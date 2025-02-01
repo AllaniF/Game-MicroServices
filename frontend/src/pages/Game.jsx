@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MapRenderer from "../components/MapRenderer";
 import Character from "../components/Character";
+import BattleModal from "../components/BattleModal"; // Importamos el modal de batalla
 import { useLocation } from "react-router-dom";
 import { getMap } from "../services/mapService";
 
@@ -10,6 +11,7 @@ const GamePage = () => {
 
   const [mapMatrix, setMapMatrix] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isBattleActive, setIsBattleActive] = useState(false); // Estado del modal de batalla
 
   useEffect(() => {
     const fetchMap = async () => {
@@ -103,8 +105,30 @@ const GamePage = () => {
           </button>
         </div>
 
+        {/* Botón Fight */}
+        <button 
+          onClick={() => setIsBattleActive(true)} 
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            fontSize: "18px",
+            backgroundColor: "red",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            borderRadius: "5px",
+          }}>
+          ⚔️ Fight
+        </button>
       </div>
-    </div>
+
+      {/* Renderiza el modal de batalla si está activo */}
+      {isBattleActive && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <BattleModal hero={selectedHero} onClose={() => setIsBattleActive(false)} />
+        </div>
+      )}
+      </div>
   );
 };
 

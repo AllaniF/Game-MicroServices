@@ -20,3 +20,13 @@ export const createHero = async (name) => {
     throw error;
   }
 };
+
+export const getEnemies = async () => {
+  try {
+    const response = await entityApi.get("/enemy");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching enemies:", error);
+    throw error;
+  }
+};
