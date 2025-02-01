@@ -117,7 +117,7 @@ services:
     command: [ "postgres", "-p", "5005" ]  # Explicitly set port in PostgreSQL
     volumes:
       - log_data:/var/lib/postgresql/data
-      - ./log.sql:/docker-entrypoint-initdb.d/log.sql
+      - ./Log.sql:/docker-entrypoint-initdb.d/Log.sql
 
 
 volumes:
