@@ -112,12 +112,28 @@ services:
       - "5004:5004"
     environment:
       POSTGRES_PASSWORD: docker
-      POSTGRES_DB: postgres
+      POSTGRES_DB: LogDb
       POSTGRES_PORT: 5005  # Ensure PostgreSQL uses 5005 internally
     command: [ "postgres", "-p", "5005" ]  # Explicitly set port in PostgreSQL
     volumes:
       - log_data:/var/lib/postgresql/data
       - ./Log.sql:/docker-entrypoint-initdb.d/Log.sql
+
+  log-service:
+    build:
+      context: Log-Service
+      dockerfile: Dockerfile-logservice
+    container_name: Log-Service
+    ports:
+      - "8002:8002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://log-postgres:5005/LogDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: docker
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - log-db
+      - rabbitmq
 
 
 volumes:
