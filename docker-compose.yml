@@ -105,6 +105,20 @@ services:
     depends_on:
      - entity-service
 
+  log-db:
+    image: postgres:latest
+    container_name: log-postgres
+    ports:
+      - "5004:5004"
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: postgres
+      POSTGRES_PORT: 5005  # Ensure PostgreSQL uses 5005 internally
+    command: [ "postgres", "-p", "5005" ]  # Explicitly set port in PostgreSQL
+    volumes:
+      - log_data:/var/lib/postgresql/data
+      - ./log.sql:/docker-entrypoint-initdb.d/log.sql
+
 
 volumes:
   db_data:
