@@ -51,6 +51,9 @@ paths:
                     type: integer
                   result:
                     type: string
+                    enum:
+                      - "win"
+                      - "lose"
                   enemy:
                     type: object
                     properties:
