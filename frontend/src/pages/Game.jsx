@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MapRenderer from "../components/MapRenderer";
 import Character from "../components/Character";
-import BattleModal from "../components/BattleModal"; // Importamos el modal de batalla
+import BattleModal from "../components/BattleModal";
 import { useLocation } from "react-router-dom";
 import { getMap } from "../services/mapService";
 
@@ -11,7 +11,7 @@ const GamePage = () => {
 
   const [mapMatrix, setMapMatrix] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isBattleActive, setIsBattleActive] = useState(false); // Estado del modal de batalla
+  const [isBattleActive, setIsBattleActive] = useState(false);
 
   useEffect(() => {
     const fetchMap = async () => {
@@ -64,71 +64,42 @@ const GamePage = () => {
         <Character position={position} />
       </div>
 
-      <div style={{ flex: "2", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-        <h1>Hero Info</h1>
-        {selectedHero ? (
-          <div style={{ textAlign: "left", border: "1px solid black", padding: "10px", width: "80%" }}>
-            <p><strong>Name:</strong> {selectedHero.name}</p>
-            <p><strong>Level:</strong> {selectedHero.level}</p>
-            <p><strong>HP:</strong> {selectedHero.maxHP}</p>
-            <p><strong>Gold:</strong> {selectedHero.gold}</p>
-            <p><strong>ATK:</strong> {selectedHero.ATK}</p>
-          </div>
-        ) : (
-          <p>No hero selected</p>
-        )}
+      {!isBattleActive && (
+        <div style={{ width: "400px", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+          <h1>Hero Info</h1>
+          {selectedHero ? (
+            <div style={{ textAlign: "left", border: "1px solid black", padding: "10px", width: "80%" }}>
+              <p><strong>Name:</strong> {selectedHero.name}</p>
+              <p><strong>Level:</strong> {selectedHero.level}</p>
+              <p><strong>HP:</strong> {selectedHero.maxHP}</p>
+              <p><strong>Gold:</strong> {selectedHero.gold}</p>
+              <p><strong>ATK:</strong> {selectedHero.ATK}</p>
+            </div>
+          ) : (
+            <p>No hero selected</p>
+          )}
 
-        <p><strong>Position:</strong> ({position.x}, {position.y})</p>
+          <p><strong>Position:</strong> ({position.x}, {position.y})</p>
 
-        {/* Controles de movimiento */}
-        <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <button 
-            onClick={() => handleMove("up")} 
-            style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px" }}>
-            ⬆️
-          </button>
-          
-          <div style={{ display: "flex", gap: "40px" }}>
-            <button onClick={() => handleMove("left")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>
-              ⬅️
-            </button>
-            
-            <button onClick={() => handleMove("right")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>
-              ➡️
-            </button>
+          <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <button onClick={() => handleMove("up")} style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px" }}>⬆️</button>
+            <div style={{ display: "flex", gap: "40px" }}>
+              <button onClick={() => handleMove("left")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>⬅️</button>
+              <button onClick={() => handleMove("right")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>➡️</button>
+            </div>
+            <button onClick={() => handleMove("down")} style={{ width: "40px", height: "40px", fontSize: "20px", marginTop: "5px" }}>⬇️</button>
           </div>
-          
-          <button 
-            onClick={() => handleMove("down")} 
-            style={{ width: "40px", height: "40px", fontSize: "20px", marginTop: "5px" }}>
-            ⬇️
-          </button>
+
+          <button onClick={() => setIsBattleActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>⚔️ Fight</button>
         </div>
+      )}
 
-        {/* Botón Fight */}
-        <button 
-          onClick={() => setIsBattleActive(true)} 
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            fontSize: "18px",
-            backgroundColor: "red",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            borderRadius: "5px",
-          }}>
-          ⚔️ Fight
-        </button>
-      </div>
-
-      {/* Renderiza el modal de batalla si está activo */}
       {isBattleActive && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div style={{ width: "400px", padding: "20px" }}>
           <BattleModal hero={selectedHero} onClose={() => setIsBattleActive(false)} />
         </div>
       )}
-      </div>
+    </div>
   );
 };
 
