@@ -141,3 +141,4 @@ volumes:
   rabbitmq_data:
   redis-data:
   map_data:
+  log_data:
