@@ -13,12 +13,13 @@ public class MapController {
     @Autowired
     private MapService mapService;
 
-    @GetMapping // Now maps to GET /map
-    public ResponseEntity<Map> getRandomMap() {
+    @GetMapping // Now maps to GET /map?heroID=123
+    public ResponseEntity<Map> getMap(@RequestParam Integer heroID) {
         Map randomMap = mapService.getRandomMap();
         if (randomMap == null) {
             return ResponseEntity.notFound().build();
         }
+        mapService.sendLogsToQueue("Random map sent from MapService to frontend", heroID);
         return ResponseEntity.ok(randomMap);
     }
 }

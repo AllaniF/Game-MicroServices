@@ -1,10 +1,14 @@
 package com.example.service;
 
+import com.example.dto.LogDTO;
 import com.example.model.Map;
 import com.example.repository.MapRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +18,13 @@ public class MapService {
     @Autowired
     private MapRepository mapRepository;
 
+    private final RabbitTemplate rabbitTemplate;
+
     private final Random random = new Random(); // Create Random instance ONCE
+
+    public MapService(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     public Map getRandomMap() {
         long count = mapRepository.count();
@@ -36,6 +46,18 @@ public class MapService {
 
     public List<Map> getAllMaps() {
         return mapRepository.findAll();
+    }
+
+    public void sendLogsToQueue(String log, Integer heroID) {
+        LogDTO logDTO = new LogDTO();
+
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+
+        logDTO.setTimestamp(timestamp);
+        logDTO.setId(heroID);
+        logDTO.setLog(log);
+
+        rabbitTemplate.convertAndSend("logs-queue", logDTO);
     }
 
 }
