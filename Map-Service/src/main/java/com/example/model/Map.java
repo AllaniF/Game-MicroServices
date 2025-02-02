@@ -1,4 +1,4 @@
-package com.example;
+package com.example.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
