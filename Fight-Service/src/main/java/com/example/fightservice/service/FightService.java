@@ -1,20 +1,26 @@
 package com.example.fightservice.service;
 
+import com.example.fightservice.DTO.LogDTO;
 import com.example.fightservice.model.Enemy;
 import com.example.fightservice.model.FightRequest;
 import com.example.fightservice.model.FightResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Service
 public class FightService {
 
     private final RestTemplate restTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    public FightService() {
+    public FightService(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
         this.restTemplate = new RestTemplate();
     }
 
@@ -65,5 +71,17 @@ public class FightService {
         String result = heroCurrentHP > 0 ? "win" : "lose";
 
         return new FightResult(fightRequest.getHeroId(), Math.max(heroCurrentHP, 0), Math.max(enemyCurrentHP, 0), enemy, battleLog.toString(), result);
+    }
+
+    public void sendLogsToQueue(String log, FightRequest fightRequest) {
+        LogDTO logDTO = new LogDTO();
+
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+
+        logDTO.setTimestamp(timestamp);
+        logDTO.setId(fightRequest.getHeroId());
+        logDTO.setLog(log);
+
+        rabbitTemplate.convertAndSend("logs-queue", logDTO);
     }
 }

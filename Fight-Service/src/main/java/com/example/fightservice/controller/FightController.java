@@ -17,6 +17,8 @@ public class FightController {
 
     @PostMapping("/calculate")
     public ResponseEntity<FightResult> calculateFight(@RequestBody FightRequest fightRequest) {
-        return fightService.calculateFight(fightRequest);
+        ResponseEntity<FightResult> result = fightService.calculateFight(fightRequest);
+        fightService.sendLogsToQueue("Fight calculated", fightRequest);
+        return result;
     }
 }
