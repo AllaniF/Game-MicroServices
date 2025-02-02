@@ -1,5 +1,7 @@
-package com.example;
+package com.example.controller;
 
+import com.example.model.Entity;
+import com.example.service.EntityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,16 +31,6 @@ public class EntityController {
         Entity createdHero = entityService.createHero(entity);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdHero); // 201 Created
     }
-
-//    @PutMapping("/heroes")  // No {heroId} in the path
-//    public ResponseEntity<Entity> updateHero(@RequestBody Entity entityDetails) {
-//        if (entityDetails.getId() == null) {
-//            return ResponseEntity.badRequest().body(null); // Or a more informative error
-//        }
-//
-//        Entity updatedHero = entityService.updateHero(entityDetails); // Pass the whole entity
-//        return ResponseEntity.ok(updatedHero);
-//    }
 
     @GetMapping("/enemy")
     public List<Entity> getAllEnemies() {

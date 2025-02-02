@@ -1,4 +1,4 @@
-package com.example;
+package com.example.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +13,14 @@ public class RabbitMQConfig {
     @Bean
     public Queue updateHeroQueue() {
         return new Queue("update-hero-queue", true);
+    }
+
+    public static final String LOG_QUEUE = "logs-queue";
+
+    // Declare the queue
+    @Bean
+    public Queue logQueue() {
+        return new Queue(LOG_QUEUE, true);
     }
 
     @Bean

@@ -1,5 +1,7 @@
-package com.example;
+package com.example.service;
 
+import com.example.model.Entity;
+import com.example.repository.EntityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
