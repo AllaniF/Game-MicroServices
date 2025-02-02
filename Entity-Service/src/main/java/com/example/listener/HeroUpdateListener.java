@@ -1,5 +1,7 @@
-package com.example;
+package com.example.listener;
 
+import com.example.service.EntityService;
+import com.example.model.Entity;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
