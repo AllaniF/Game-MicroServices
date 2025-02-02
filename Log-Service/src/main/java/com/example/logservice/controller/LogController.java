@@ -14,11 +14,6 @@ public class LogController {
     @Autowired
     private LogService logService;
 
-    @PostMapping
-    public Log createLog(@RequestBody Log log) {
-        return logService.saveLog(log);
-    }
-
     @GetMapping
     public List<Log> getAllLogs() {
         return logService.getAllLogs();

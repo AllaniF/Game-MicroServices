@@ -1,5 +1,6 @@
 package com.example.logservice.listener;
 
+import com.example.logservice.dto.LogDTO;
 import com.example.logservice.model.Log;
 import com.example.logservice.service.LogService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,7 +16,14 @@ public class LogListener {
     }
 
     @RabbitListener(queues = "logs-queue")
-    public void receiveLogMessage(Log log) {
-        logService.saveLog(log);  // Save log to database
+    public void receiveMessage(LogDTO logDTO) {
+        // Convert LogDTO to Log entity
+        Log log = new Log();
+        log.setHeroID(logDTO.getId());  // Map `id` from DTO to `heroID`
+        log.setTimestamp(logDTO.getTimestamp());
+        log.setLog(logDTO.getLog());
+
+        // Save to database
+        logService.saveLog(log);
     }
 }
