@@ -18,6 +18,10 @@ public class LogService {
     }
 
     public List<Log> getAllLogs() {
-        return logRepository.findAll();
+        return logRepository.findAllByOrderByTimestampAsc();
+    }
+
+    public List<Log> getLogsByHero(Integer heroID) {
+        return logRepository.findByHeroIDOrderByTimestampAsc(heroID);
     }
 }
