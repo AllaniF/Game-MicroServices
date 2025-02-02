@@ -58,21 +58,6 @@ public class EntityService {
         }
     }
 
-    public Entity updateHero(Entity entityDetails) { // Take the whole entity as input
-        Optional<Entity> entity = entityRepository.findById(entityDetails.getId()); //Get by id from the body
-        if (entity.isPresent()) {
-            Entity updatedEntity = entity.get();
-            updatedEntity.setLevel(entityDetails.getLevel());
-            updatedEntity.setDunjonNb(entityDetails.getDunjonNb());
-            updatedEntity.setMaxHP(entityDetails.getMaxHP());
-            updatedEntity.setGold(entityDetails.getGold());
-            updatedEntity.setAtk(entityDetails.getAtk());
-            return entityRepository.save(updatedEntity);
-        } else {
-            throw new RuntimeException("Hero not found with id " + entityDetails.getId()); // Use the ID from the body
-        }
-    }
-
     public List<Entity> getAllEnemies() {
         return entityRepository.findByType("Enemy");
     }

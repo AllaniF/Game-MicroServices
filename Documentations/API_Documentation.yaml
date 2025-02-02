@@ -3,7 +3,7 @@ info:
   title: Game API
   description: API documentation for the game backend services.
   version: 1.0.0
-servers:
+servers: #TODO change host name
   - url: http://localhost:8000
     description: Server for Frontend service
   - url: http://localhost:8001/game-state/
@@ -14,6 +14,8 @@ servers:
     description: Server for Fight service
   - url: http://localhost:8004/map/
     description: Server for Map service
+  - url: http://localhost:8005/log
+    description: Server for Log Service
 paths:
   /fight/calculate:
     post:
