@@ -131,6 +131,13 @@ paths:
       summary: Get a list of enemies
       tags:
         - Entity
+      parameters:
+        - name: heroID
+          in: query
+          required: true
+          description: The ID of the hero to send to the log queue
+          schema:
+            type: integer
       responses:
         200:
           description: List of enemies
@@ -148,8 +155,6 @@ paths:
                     level:
                       type: integer
                     dunjonNb:
-                      type: integer
-                    id:
                       type: integer
                     maxHP:
                       type: integer
