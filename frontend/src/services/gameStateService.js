@@ -1,11 +1,11 @@
 import { gameStateApi } from "./api";
 
-export const storeSelectedHero = async (heroData) => {
+export const saveSelectedHero = async (heroData) => {
   try {
-    const response = await api.post("http://localhost:8001/game-state/selected-hero", heroData);
+    const response = await gameStateApi.post("/selected-hero", {heroData});
     return response.data;
   } catch (error) {
-    console.error("Error storing selected hero:", error);
+    console.error("Error saving selected hero:", error);
     throw error;
   }
 };
@@ -16,37 +16,6 @@ export const saveMap = async (mapData) => {
     return response.data;
   } catch (error) {
     console.error("Error saving map:", error);
-    throw error;
-  }
-};
-
-
-export const calculateNextPosition = async (direction) => {
-  try {
-    const response = await api.post("http://localhost:8001/game-state/next-position", { direction });
-    return response.data;
-  } catch (error) {
-    console.error("Error calculating next position:", error);
-    throw error;
-  }
-};
-
-export const storeCombatResults = async (remainingHp) => {
-  try {
-    const response = await api.post("http://localhost:8001/game-state/combat-results", { remainingHp });
-    return response.data;
-  } catch (error) {
-    console.error("Error storing combat results:", error);
-    throw error;
-  }
-};
-
-export const upgradeHero = async (upgradeType) => {
-  try {
-    const response = await api.post("http://localhost:8001/game-state/upgrade-hero", { upgrade: upgradeType });
-    return response.data;
-  } catch (error) {
-    console.error("Error upgrading hero:", error);
     throw error;
   }
 };
