@@ -36,7 +36,7 @@ public class EntityController {
 
     @GetMapping("/enemy")
     public List<Entity> getAllEnemies(@RequestParam Integer heroID) {
-        entityService.sendLogsToQueue("Random map sent from MapService to frontend", heroID);
+        entityService.sendLogsToQueue("The list of all enemies is sent to Fight Service", heroID);
         return entityService.getAllEnemies();
     }
 }
