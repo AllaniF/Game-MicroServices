@@ -1,4 +1,4 @@
-import api from "./api";
+import { gameStateApi } from "./api";
 
 export const storeSelectedHero = async (heroData) => {
   try {
@@ -10,15 +10,16 @@ export const storeSelectedHero = async (heroData) => {
   }
 };
 
-export const storeGameMap = async (mapData) => {
+export const saveMap = async (mapData) => {
   try {
-    const response = await api.post("http://localhost:8001/game-state/map", mapData);
+    const response = await gameStateApi.post("/map", { mapData });
     return response.data;
   } catch (error) {
-    console.error("Error storing game map:", error);
+    console.error("Error saving map:", error);
     throw error;
   }
 };
+
 
 export const calculateNextPosition = async (direction) => {
   try {
