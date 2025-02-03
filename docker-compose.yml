@@ -28,6 +28,17 @@ services:
       - map_data:/var/lib/postgresql/data
       - ./map.sql:/docker-entrypoint-initdb.d/map.sql
 
+  game-state-service:
+    build:
+      context: Game-State-Service
+      dockerfile: Dockerfile-gamestateservice
+    container_name: Game-State-Service
+    ports:
+      - "8001:8001"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - rabbitmq
 
   entity-service:
     build:
@@ -60,16 +71,17 @@ services:
     container_name: Map-service
     ports:
       - "8004:8004"
+    depends_on:
+      - rabbitmq
 
 
   redis:
-    image: redis:latest
+    build:
+      context: Game-State-Service
+      dockerfile: Dockerfile-redis
     container_name: redis-server
     ports:
       - "6379:6379"
-    volumes:
-      - redis-data:/data
-
 
   rabbitmq:
     build:
@@ -95,9 +107,40 @@ services:
     depends_on:
      - entity-service
 
+  log-db:
+    image: postgres:latest
+    container_name: log-postgres
+    ports:
+      - "5005:5005"
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: LogDb
+      POSTGRES_PORT: 5005  # Ensure PostgreSQL uses 5005 internally
+    command: [ "postgres", "-p", "5005" ]  # Explicitly set port in PostgreSQL
+    volumes:
+      - log_data:/var/lib/postgresql/data
+      - ./Log.sql:/docker-entrypoint-initdb.d/Log.sql
+
+  log-service:
+    build:
+      context: Log-Service
+      dockerfile: Dockerfile-logservice
+    container_name: Log-Service
+    ports:
+      - "8005:8005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://log-postgres:5005/LogDb  # Connection to PostgreSQL container
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: docker
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - log-db
+      - rabbitmq
+
 
 volumes:
   db_data:
   rabbitmq_data:
   redis-data:
   map_data:
+  log_data:
