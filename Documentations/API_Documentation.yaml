@@ -3,7 +3,7 @@ info:
   title: Game API
   description: API documentation for the game backend services.
   version: 1.0.0
-servers: #TODO change host name
+servers:
   - url: http://localhost:8000
     description: Server for Frontend service
   - url: http://localhost:8001/game-state/
