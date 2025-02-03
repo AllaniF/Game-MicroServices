@@ -12,13 +12,15 @@ export const saveSelectedHero = async (heroData) => {
 
 export const saveMap = async (mapData) => {
   try {
-    const response = await gameStateApi.post("/map", { mapData });
+    console.log("Enviando mapa a la API:", mapData);
+    const response = await gameStateApi.post("/map", mapData);
     return response.data;
   } catch (error) {
     console.error("Error saving map:", error);
     throw error;
   }
 };
+
 
 export const moveHero = async (direction) => {
   try {
