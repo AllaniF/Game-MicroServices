@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { getMap } from "../services/mapService";
-import { saveMap } from "../services/gameStateService"; // Importa la función para guardar el mapa
+import { getMap } from "../services/mapService"; // Importa la función que obtiene el mapa
 import house from "../../assets/house.png";
 import tree1 from "../../assets/trees/tree1.png";
 import tree2 from "../../assets/trees/tree2.png";
@@ -17,6 +16,9 @@ const flowersTiles = [flower1, flower2];
 
 const TILE_SIZE = 70;
 
+/**
+ * Genera una textura aleatoria según el tipo de terreno.
+ */
 const getRandomTile = (type) => {
   if (type === "E") {
     const options = [...grassTiles, ...flowersTiles, null];
@@ -34,16 +36,9 @@ const MapRenderer = () => {
         const data = await getMap();
         if (data && data.matrix && data.matrix.matrix) {
           setMapMatrix(data.matrix.matrix);
-
-          // Enviar automáticamente el mapa a la API después de cargarlo
-          const mapData = {
-            id: 0, // Ajusta el ID si es necesario
-            matrix: data.matrix.matrix,
-          };
-          await saveMap(mapData);
         }
       } catch (error) {
-        console.error("Error loading or saving map:", error);
+        console.error("Error loading map:", error);
       }
     };
 

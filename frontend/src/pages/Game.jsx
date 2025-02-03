@@ -3,61 +3,86 @@ import MapRenderer from "../components/MapRenderer";
 import Character from "../components/Character";
 import BattleModal from "../components/BattleModal";
 import UpgradeHero from "../components/UpgradeHero";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getMap } from "../services/mapService";
+import { moveHero, saveMap, saveSelectedHero } from "../services/gameStateService";
 
 const GamePage = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const selectedHero = location.state?.hero || null;
 
   const [mapMatrix, setMapMatrix] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isBattleActive, setIsBattleActive] = useState(false);
   const [isUpgradeActive, setIsUpgradeActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
-    const fetchMap = async () => {
+    const initializeGame = async () => {
       try {
+        if (!selectedHero) {
+          console.error("No hero selected.");
+          return;
+        }
+
+        // 1️⃣ Guardar el héroe en la API
+        console.log("Enviando datos del héroe...");
+        await saveSelectedHero(selectedHero);
+        console.log("Héroe guardado exitosamente.");
+
+        // 2️⃣ Obtener el mapa
+        console.log("Obteniendo el mapa...");
         const data = await getMap();
+
         if (data && data.matrix && data.matrix.matrix) {
           setMapMatrix(data.matrix.matrix);
+
+          // 3️⃣ Guardar el mapa en la API
+          console.log("Enviando mapa a la API...");
+          await saveMap({ id: 0, matrix: data.matrix.matrix });
+          console.log("Mapa guardado con éxito.");
+
+          // 4️⃣ Ahora el mapa está listo
+          setIsMapReady(true);
+          console.log("Mapa listo, se puede mover al personaje.");
         }
       } catch (error) {
-        console.error("Error loading map:", error);
+        console.error("Error initializing game:", error);
+        setErrorMessage("Error initializing game. Please try again.");
       }
     };
 
-    fetchMap();
+    initializeGame();
   }, []);
 
-  const MAP_WIDTH = mapMatrix.length > 0 ? mapMatrix[0].length : 0;
-  const MAP_HEIGHT = mapMatrix.length;
+  const handleMove = async (direction) => {
+    if (!isMapReady) {
+      setErrorMessage("The map is not ready yet. Please wait...");
+      return;
+    }
 
-  const handleMove = (direction) => {
-    setPosition((prev) => {
-      let newX = prev.x;
-      let newY = prev.y;
+    try {
+      console.log(`Moviendo en dirección: ${direction}`);
+      const response = await moveHero(direction);
 
-      switch (direction) {
-        case "up":
-          if (newY > 0) newY--;
-          break;
-        case "down":
-          if (newY < MAP_HEIGHT - 1) newY++;
-          break;
-        case "left":
-          if (newX > 0) newX--;
-          break;
-        case "right":
-          if (newX < MAP_WIDTH - 1) newX++;
-          break;
-        default:
-          break;
+      if (response.nextPosition) {
+        setPosition(response.nextPosition);
+        console.log("Nueva posición del personaje:", response.nextPosition);
       }
 
-      return { x: newX, y: newY };
-    });
+      if (response.isFighting) {
+        console.log("¡Batalla iniciada!");
+        setIsBattleActive(true);
+      }
+
+      if (response.isFinished) {
+        alert("¡Has alcanzado el objetivo!");
+      }
+    } catch (error) {
+      console.error("Error al mover el personaje:", error);
+      setErrorMessage("Error moving hero. Please try again.");
+    }
   };
 
   return (
@@ -85,17 +110,26 @@ const GamePage = () => {
 
             <p><strong>Position:</strong> ({position.x}, {position.y})</p>
 
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+            {!isMapReady && <p>El mapa aún no está listo...</p>}
+
             <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <button onClick={() => handleMove("up")} style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px" }}>⬆️</button>
+              <button onClick={() => handleMove("up")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px", opacity: isMapReady ? 1 : 0.5 }}>⬆️</button>
               <div style={{ display: "flex", gap: "40px" }}>
-                <button onClick={() => handleMove("left")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>⬅️</button>
-                <button onClick={() => handleMove("right")} style={{ width: "40px", height: "40px", fontSize: "20px" }}>➡️</button>
+                <button onClick={() => handleMove("left")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", opacity: isMapReady ? 1 : 0.5 }}>⬅️</button>
+                <button onClick={() => handleMove("right")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", opacity: isMapReady ? 1 : 0.5 }}>➡️</button>
               </div>
-              <button onClick={() => handleMove("down")} style={{ width: "40px", height: "40px", fontSize: "20px", marginTop: "5px" }}>⬇️</button>
+              <button onClick={() => handleMove("down")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", marginTop: "5px", opacity: isMapReady ? 1 : 0.5 }}>⬇️</button>
             </div>
 
             <button onClick={() => setIsBattleActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>⚔️ Fight</button>
             <button onClick={() => setIsUpgradeActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "green", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>🔼 Upgrade Hero</button>
+
+            {/* Botón de prueba para reenviar el mapa */}
+            <button onClick={() => saveMap({ id: 0, matrix: mapMatrix })} style={{ marginTop: "20px", padding: "10px", backgroundColor: "blue", color: "white", borderRadius: "5px" }}>
+              🔄 Reenviar Mapa
+            </button>
           </div>
         )}
 

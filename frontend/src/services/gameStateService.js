@@ -19,3 +19,13 @@ export const saveMap = async (mapData) => {
     throw error;
   }
 };
+
+export const moveHero = async (direction) => {
+  try {
+    const response = await gameStateApi.post("/next-position", { direction });
+    return response.data;
+  } catch (error) {
+    console.error("Error moving hero:", error);
+    throw error;
+  }
+};
