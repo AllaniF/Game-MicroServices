@@ -4,7 +4,7 @@ info:
   description: API documentation for the game backend services.
   version: 1.0.0
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:5173
     description: Server for Frontend service
   - url: http://localhost:8001/game-state/
     description: Server for Game State service
