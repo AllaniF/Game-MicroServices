@@ -21,5 +21,29 @@ This command will start all necessary microservices and dependencies in detached
 - The application services are configured in the docker-compose.yml file.
 - Logs can be retrieved using Log Service API.
 
+## Database Structure
+### Entity Database
+| Column    | Type   |
+|-----------|--------|
+| ID        | Int    |
+| Name      | String |
+| Type      | String |
+| Level     | Int    |
+| DunjonNb  | Int    |
+| MaxHP     | Int    |
+| Gold      | Int    |
+| ATK       | Int    |
 
-Enjoy the game! 🎮
+### Map Database
+| Column  | Type   |
+|---------|--------|
+| ID      | Int    |
+| Matrix  | String |
+
+### Log Database
+| Column    | Type   |
+|-----------|--------|
+| ID        | Int   |
+| Timestamp | String |
+| HeroID    | Int   |
+| Message   | String |
