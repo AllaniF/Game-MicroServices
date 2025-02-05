@@ -163,6 +163,20 @@ paths:
                     atk:
                       type: number
 
+  /game-state/new-game:
+    get:
+      summary: Create a new game
+      tags:
+        - Game State
+      responses:
+        200:
+          description: New game created
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: New game created successfully!
+
   /game-state/selected-hero:
     post:
       summary: Store the selected hero
