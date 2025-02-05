@@ -41,3 +41,13 @@ export const newGame = async () => {
     throw error;
   }
 }
+
+export const saveHeroHP = async (currentHP) => {
+  try {
+    const response = await gameStateApi.post("/combat-results", { currentHP });
+    return response.data;
+  } catch (error) {
+    console.error("Error saving hero HP:", error);
+    throw error;
+  }
+}

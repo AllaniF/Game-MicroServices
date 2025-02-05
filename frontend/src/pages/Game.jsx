@@ -9,22 +9,19 @@ import { moveHero, saveMap, saveSelectedHero } from "../services/gameStateServic
 
 const GamePage = () => {
   const location = useLocation();
-  //const selectedHero = location.state?.hero || null;
   const selectedHero = location.state?.hero || null;
+
   if (!selectedHero || !selectedHero.id) {
     console.error("No hero received in GamePage.");
   }
 
   const [mapMatrix, setMapMatrix] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [currentHP, setCurrentHP] = useState(selectedHero?.maxHP || 0);
   const [isBattleActive, setIsBattleActive] = useState(false);
   const [isUpgradeActive, setIsUpgradeActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
-
-  console.log("location en GamePage: este no es un log de error");
-  console.log("selectedHero en GamePage:", selectedHero);
-  console.log("selectedHero.id en GamePage:", selectedHero?.id);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -33,13 +30,14 @@ const GamePage = () => {
           console.error("No hero selected or missing hero ID.");
           return;
         }
-  
+
         await saveSelectedHero(selectedHero);
-  
+        setCurrentHP(selectedHero.maxHP); // Asegurar que currentHP inicie con maxHP
+
         const data = await getMap(selectedHero.id);
-  
+
         if (data && data.matrix && data.matrix.matrix) {
-          setMapMatrix(data.matrix.matrix); // Guardamos el mapa solo en GamePage
+          setMapMatrix(data.matrix.matrix);
           await saveMap({ id: 0, matrix: data.matrix.matrix });
           setIsMapReady(true);
         }
@@ -48,11 +46,11 @@ const GamePage = () => {
         setErrorMessage("Error initializing game. Please try again.");
       }
     };
-  
+
     if (selectedHero) {
       initializeGame();
     }
-  }, [selectedHero]);  
+  }, [selectedHero]);
 
   const handleMove = async (direction) => {
     if (!isMapReady) {
@@ -65,11 +63,12 @@ const GamePage = () => {
       if (response.nextPosition) {
         setPosition(response.nextPosition);
       }
-
+      if (response.currentHP !== undefined && response.currentHP !== null) {
+        setCurrentHP(response.currentHP > 0 ? response.currentHP : currentHP);
+      }
       if (response.isFighting) {
         setIsBattleActive(true);
       }
-
       if (response.isFinished) {
         alert("Level Completed!");
       }
@@ -87,28 +86,24 @@ const GamePage = () => {
 
       <div style={{ width: "400px", padding: "20px", flexShrink: 0 }}>
         {!isBattleActive && !isUpgradeActive && (
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ textAlign: "center" }}>
             <h1>Hero Info</h1>
-            {selectedHero ? (
-              <div style={{ textAlign: "left", border: "1px solid black", padding: "10px", width: "80%" }}>
+            {selectedHero && (
+              <div style={{ textAlign: "left", border: "1px solid black", padding: "10px", width: "80%", margin: "0 auto" }}>
                 <p><strong>Name:</strong> {selectedHero.name}</p>
                 <p><strong>Level:</strong> {selectedHero.level}</p>
-                <p><strong>HP:</strong> {selectedHero.maxHP}</p>
+                <p><strong>Max HP:</strong> {selectedHero.maxHP}</p>
+                <p><strong>Current HP:</strong> {currentHP}</p>
                 <p><strong>Gold:</strong> {selectedHero.gold}</p>
                 <p><strong>ATK:</strong> {selectedHero.atk}</p>
               </div>
-            ) : (
-              <p>No hero selected</p>
             )}
-
             <p><strong>Position:</strong> ({position.x}, {position.y})</p>
-
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-
             {!isMapReady && <p>El mapa aún no está listo...</p>}
 
             <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <button onClick={() => handleMove("up")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px", opacity: isMapReady ? 1 : 0.5 }}>⬆️</button>
+              <button onClick={() => handleMove("up")} disabled={!isMapReady}style={{ width: "40px", height: "40px", fontSize: "20px", marginBottom: "5px", opacity: isMapReady ? 1 : 0.5 }}>⬆️</button>
               <div style={{ display: "flex", gap: "40px" }}>
                 <button onClick={() => handleMove("left")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", opacity: isMapReady ? 1 : 0.5 }}>⬅️</button>
                 <button onClick={() => handleMove("right")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", opacity: isMapReady ? 1 : 0.5 }}>➡️</button>
@@ -116,14 +111,13 @@ const GamePage = () => {
               <button onClick={() => handleMove("down")} disabled={!isMapReady} style={{ width: "40px", height: "40px", fontSize: "20px", marginTop: "5px", opacity: isMapReady ? 1 : 0.5 }}>⬇️</button>
             </div>
 
-            <button onClick={() => setIsBattleActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>⚔️ Fight</button>
-            <button onClick={() => setIsUpgradeActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "green", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>🔼 Upgrade Hero</button>
-
+            <button onClick={() => setIsBattleActive(true)} style={{ marginTop: "20px" }}>⚔️ Fight</button>
+            <button onClick={() => setIsUpgradeActive(true)} style={{ marginTop: "20px" }}>🔼 Upgrade Hero</button>
           </div>
         )}
 
         {isBattleActive && (
-          <BattleModal hero={selectedHero} onClose={() => setIsBattleActive(false)} />
+          <BattleModal hero={{ ...selectedHero, currentHP }} onClose={() => setIsBattleActive(false)} />
         )}
 
         {isUpgradeActive && (
