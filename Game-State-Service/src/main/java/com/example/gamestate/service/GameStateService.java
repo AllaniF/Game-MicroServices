@@ -38,10 +38,15 @@ public class GameStateService {
         return (Game) redisTemplate.opsForValue().get(GAME_KEY);
     }
 
+    public void createGame() {
+        Game game = new Game();
+        saveGame(game);  // Store it in Redis
+    }
+
     public void saveHero(Hero hero) {
         Game game = getGame();
         if (game == null) {
-            game = new Game();
+            throw new IllegalStateException("No existing game found. Create a game before adding a hero.");
         }
         game.setHero(hero);
         saveGame(game);
@@ -55,7 +60,7 @@ public class GameStateService {
     public void saveMap(GameMap gameMap) {
         Game game = getGame();
         if (game == null) {
-            game = new Game();
+            throw new IllegalStateException("No existing game found. Create a game before adding a map.");
         }
         game.setGameMap(gameMap);
         saveGame(game);
