@@ -9,7 +9,11 @@ import { moveHero, saveMap, saveSelectedHero } from "../services/gameStateServic
 
 const GamePage = () => {
   const location = useLocation();
+  //const selectedHero = location.state?.hero || null;
   const selectedHero = location.state?.hero || null;
+  if (!selectedHero || !selectedHero.id) {
+    console.error("No hero received in GamePage.");
+  }
 
   const [mapMatrix, setMapMatrix] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -18,20 +22,29 @@ const GamePage = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
+  console.log("location en GamePage: este no es un log de error");
+  console.log("selectedHero en GamePage:", selectedHero);
+  console.log("selectedHero.id en GamePage:", selectedHero?.id);
+
   useEffect(() => {
+    console.log("selectedHero en GamePage:", selectedHero);
+  
     const initializeGame = async () => {
       try {
-        if (!selectedHero) {
-          console.error("No hero selected.");
+        if (!selectedHero || !selectedHero.id) {
+          console.error("No hero selected or missing hero ID.");
           return;
         }
+  
         await saveSelectedHero(selectedHero);
-        const data = await getMap();
-
+        console.log("Selected hero:", selectedHero);
+  
+        const data = await getMap(selectedHero.id);
+  
         if (data && data.matrix && data.matrix.matrix) {
           setMapMatrix(data.matrix.matrix);
           await saveMap({ id: 0, matrix: data.matrix.matrix });
-
+  
           setIsMapReady(true);
         }
       } catch (error) {
@@ -39,9 +52,12 @@ const GamePage = () => {
         setErrorMessage("Error initializing game. Please try again.");
       }
     };
-
-    initializeGame();
-  }, []);
+  
+    if (selectedHero) {
+      initializeGame();
+    }
+  }, [selectedHero]);
+  
 
   const handleMove = async (direction) => {
     if (!isMapReady) {
@@ -70,7 +86,7 @@ const GamePage = () => {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div style={{ flex: "3", position: "relative", borderRight: "2px solid black" }}>
-        <MapRenderer mapMatrix={mapMatrix} />
+        <MapRenderer mapMatrix={mapMatrix} heroId={selectedHero?.id} />
         <Character position={position} />
       </div>
 

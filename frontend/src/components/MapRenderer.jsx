@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { getMap } from "../services/mapService"; // Importa la función que obtiene el mapa
+import { getMap } from "../services/mapService";
 import house from "../../assets/house.png";
 import tree1 from "../../assets/trees/tree1.png";
 import tree2 from "../../assets/trees/tree2.png";
@@ -16,9 +16,6 @@ const flowersTiles = [flower1, flower2];
 
 const TILE_SIZE = 70;
 
-/**
- * Genera una textura aleatoria según el tipo de terreno.
- */
 const getRandomTile = (type) => {
   if (type === "E") {
     const options = [...grassTiles, ...flowersTiles, null];
@@ -27,15 +24,19 @@ const getRandomTile = (type) => {
   return null;
 };
 
-const MapRenderer = () => {
-  const [mapMatrix, setMapMatrix] = useState([]);
+const MapRenderer = ({ mapMatrix, heroId }) => {
+  const [localMapMatrix, setLocalMapMatrix] = useState([]);
 
   useEffect(() => {
     const fetchMap = async () => {
       try {
-        const data = await getMap();
+        if (!heroId) {
+          console.error("No hero ID provided.");
+          return;
+        }
+        const data = await getMap(heroId); // Usamos heroId al llamar getMap
         if (data && data.matrix && data.matrix.matrix) {
-          setMapMatrix(data.matrix.matrix);
+          setLocalMapMatrix(data.matrix.matrix);
         }
       } catch (error) {
         console.error("Error loading map:", error);
@@ -43,10 +44,10 @@ const MapRenderer = () => {
     };
 
     fetchMap();
-  }, []);
+  }, [heroId]); // Se ejecuta cuando heroId cambia
 
   const renderedMap = useMemo(() => {
-    return mapMatrix.map((row, rowIndex) =>
+    return localMapMatrix.map((row, rowIndex) =>
       row.map((tile, colIndex) => {
         let imageSrc = null;
         let imageSize = "100%";
@@ -104,14 +105,14 @@ const MapRenderer = () => {
         );
       })
     );
-  }, [mapMatrix]);
+  }, [localMapMatrix]);
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${mapMatrix.length > 0 ? mapMatrix[0].length : 0}, ${TILE_SIZE}px)`,
-        gridTemplateRows: `repeat(${mapMatrix.length}, ${TILE_SIZE}px)`,
+        gridTemplateColumns: `repeat(${localMapMatrix.length > 0 ? localMapMatrix[0].length : 0}, ${TILE_SIZE}px)`,
+        gridTemplateRows: `repeat(${localMapMatrix.length}, ${TILE_SIZE}px)`,
         backgroundColor: "#2d6a4f",
       }}
     >

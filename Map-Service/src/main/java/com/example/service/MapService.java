@@ -20,8 +20,6 @@ public class MapService {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final Random random = new Random(); // Create Random instance ONCE
-
     public MapService(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
