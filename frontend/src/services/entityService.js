@@ -21,9 +21,9 @@ export const createHero = async (name) => {
   }
 };
 
-export const getEnemies = async () => {
+export const getEnemies = async (heroId) => {
   try {
-    const response = await entityApi.get("/enemy");
+    const response = await entityApi.get(`/enemy?heroID=${heroId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching enemies:", error);

@@ -9,8 +9,12 @@ const BattleModal = ({ onClose, hero }) => {
 
   useEffect(() => {
     const fetchEnemy = async () => {
+      if (!hero.id) {
+        console.error("No hero ID provided.");
+        return;
+      }
       try {
-        const enemies = await getEnemies();
+        const enemies = await getEnemies(hero.id);
         if (enemies.length > 0) {
           const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
           setEnemy(randomEnemy);
