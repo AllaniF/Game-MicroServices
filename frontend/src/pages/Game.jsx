@@ -27,8 +27,6 @@ const GamePage = () => {
   console.log("selectedHero.id en GamePage:", selectedHero?.id);
 
   useEffect(() => {
-    console.log("selectedHero en GamePage:", selectedHero);
-  
     const initializeGame = async () => {
       try {
         if (!selectedHero || !selectedHero.id) {
@@ -37,14 +35,12 @@ const GamePage = () => {
         }
   
         await saveSelectedHero(selectedHero);
-        console.log("Selected hero:", selectedHero);
   
         const data = await getMap(selectedHero.id);
   
         if (data && data.matrix && data.matrix.matrix) {
-          setMapMatrix(data.matrix.matrix);
+          setMapMatrix(data.matrix.matrix); // Guardamos el mapa solo en GamePage
           await saveMap({ id: 0, matrix: data.matrix.matrix });
-  
           setIsMapReady(true);
         }
       } catch (error) {
@@ -56,8 +52,7 @@ const GamePage = () => {
     if (selectedHero) {
       initializeGame();
     }
-  }, [selectedHero]);
-  
+  }, [selectedHero]);  
 
   const handleMove = async (direction) => {
     if (!isMapReady) {

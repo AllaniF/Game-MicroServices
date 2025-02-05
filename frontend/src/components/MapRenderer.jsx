@@ -24,30 +24,9 @@ const getRandomTile = (type) => {
   return null;
 };
 
-const MapRenderer = ({ mapMatrix, heroId }) => {
-  const [localMapMatrix, setLocalMapMatrix] = useState([]);
-
-  useEffect(() => {
-    const fetchMap = async () => {
-      try {
-        if (!heroId) {
-          console.error("No hero ID provided.");
-          return;
-        }
-        const data = await getMap(heroId); // Usamos heroId al llamar getMap
-        if (data && data.matrix && data.matrix.matrix) {
-          setLocalMapMatrix(data.matrix.matrix);
-        }
-      } catch (error) {
-        console.error("Error loading map:", error);
-      }
-    };
-
-    fetchMap();
-  }, [heroId]); // Se ejecuta cuando heroId cambia
-
+const MapRenderer = ({ mapMatrix }) => {
   const renderedMap = useMemo(() => {
-    return localMapMatrix.map((row, rowIndex) =>
+    return mapMatrix.map((row, rowIndex) =>
       row.map((tile, colIndex) => {
         let imageSrc = null;
         let imageSize = "100%";
@@ -105,14 +84,14 @@ const MapRenderer = ({ mapMatrix, heroId }) => {
         );
       })
     );
-  }, [localMapMatrix]);
+  }, [mapMatrix]);
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${localMapMatrix.length > 0 ? localMapMatrix[0].length : 0}, ${TILE_SIZE}px)`,
-        gridTemplateRows: `repeat(${localMapMatrix.length}, ${TILE_SIZE}px)`,
+        gridTemplateColumns: `repeat(${mapMatrix.length > 0 ? mapMatrix[0].length : 0}, ${TILE_SIZE}px)`,
+        gridTemplateRows: `repeat(${mapMatrix.length}, ${TILE_SIZE}px)`,
         backgroundColor: "#2d6a4f",
       }}
     >
