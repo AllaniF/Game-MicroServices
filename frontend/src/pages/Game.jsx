@@ -25,27 +25,14 @@ const GamePage = () => {
           console.error("No hero selected.");
           return;
         }
-
-        // 1️⃣ Guardar el héroe en la API
-        console.log("Enviando datos del héroe...");
         await saveSelectedHero(selectedHero);
-        console.log("Héroe guardado exitosamente.");
-
-        // 2️⃣ Obtener el mapa
-        console.log("Obteniendo el mapa...");
         const data = await getMap();
 
         if (data && data.matrix && data.matrix.matrix) {
           setMapMatrix(data.matrix.matrix);
-
-          // 3️⃣ Guardar el mapa en la API
-          console.log("Enviando mapa a la API...");
           await saveMap({ id: 0, matrix: data.matrix.matrix });
-          console.log("Mapa guardado con éxito.");
 
-          // 4️⃣ Ahora el mapa está listo
           setIsMapReady(true);
-          console.log("Mapa listo, se puede mover al personaje.");
         }
       } catch (error) {
         console.error("Error initializing game:", error);
@@ -58,29 +45,24 @@ const GamePage = () => {
 
   const handleMove = async (direction) => {
     if (!isMapReady) {
-      setErrorMessage("The map is not ready yet. Please wait...");
       return;
     }
 
     try {
-      console.log(`Moviendo en dirección: ${direction}`);
       const response = await moveHero(direction);
 
       if (response.nextPosition) {
         setPosition(response.nextPosition);
-        console.log("Nueva posición del personaje:", response.nextPosition);
       }
 
       if (response.isFighting) {
-        console.log("¡Batalla iniciada!");
         setIsBattleActive(true);
       }
 
       if (response.isFinished) {
-        alert("¡Has alcanzado el objetivo!");
+        alert("Level Completed!");
       }
     } catch (error) {
-      console.error("Error al mover el personaje:", error);
       setErrorMessage("Error moving hero. Please try again.");
     }
   };
@@ -102,7 +84,7 @@ const GamePage = () => {
                 <p><strong>Level:</strong> {selectedHero.level}</p>
                 <p><strong>HP:</strong> {selectedHero.maxHP}</p>
                 <p><strong>Gold:</strong> {selectedHero.gold}</p>
-                <p><strong>ATK:</strong> {selectedHero.ATK}</p>
+                <p><strong>ATK:</strong> {selectedHero.atk}</p>
               </div>
             ) : (
               <p>No hero selected</p>
@@ -126,10 +108,6 @@ const GamePage = () => {
             <button onClick={() => setIsBattleActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>⚔️ Fight</button>
             <button onClick={() => setIsUpgradeActive(true)} style={{ marginTop: "20px", padding: "10px 20px", fontSize: "18px", backgroundColor: "green", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" }}>🔼 Upgrade Hero</button>
 
-            {/* Botón de prueba para reenviar el mapa */}
-            <button onClick={() => saveMap({ id: 0, matrix: mapMatrix })} style={{ marginTop: "20px", padding: "10px", backgroundColor: "blue", color: "white", borderRadius: "5px" }}>
-              🔄 Reenviar Mapa
-            </button>
           </div>
         )}
 

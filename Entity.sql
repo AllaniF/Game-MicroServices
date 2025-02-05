@@ -21,8 +21,8 @@ VALUES
 -- Enemies
 INSERT INTO Entity (Name, Type, Level, DunjonNb, MaxHP, Gold, ATK)
 VALUES
-    ('Gnoll', 'Enemy', 2, 1, 50, 10, 15),
-    ('Orc Grunt', 'Enemy', 5, 2, 80, 20, 20),
-    ('Dark Sorcerer', 'Enemy', 8, 3, 120, 50, 30),
-    ('Undead Warrior', 'Enemy', 10, 4, 150, 80, 35),
-    ('Black Dragon', 'Enemy', 15, 5, 300, 500, 60);
+    ('Gnoll', 'Enemy', 2, 1, 5, 10, 1),
+    ('Orc Grunt', 'Enemy', 5, 2, 8, 20, 2),
+    ('Dark Sorcerer', 'Enemy', 8, 3, 12, 50, 3),
+    ('Undead Warrior', 'Enemy', 10, 4, 15, 80, 3),
+    ('Black Dragon', 'Enemy', 15, 5, 30, 500, 6);
