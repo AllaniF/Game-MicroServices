@@ -26,7 +26,7 @@ public class FightService {
 
     public ResponseEntity<FightResult> calculateFight(FightRequest fightRequest) {
         // Fetch enemies from external service
-        String enemyServiceUrl = "http://Entity-Service:8002/entity/enemy"; // Replace with actual URL
+        String enemyServiceUrl = "http://Entity-Service:8002/entity/enemy?heroID=" + fightRequest.getHeroId(); // Replace with actual URL
         ResponseEntity<Enemy[]> response = restTemplate.getForEntity(enemyServiceUrl, Enemy[].class);
         Enemy[] enemies = response.getBody();
 
@@ -45,7 +45,7 @@ public class FightService {
     private FightResult simulateFight(FightRequest fightRequest, Enemy enemy) {
         int heroCurrentHP = fightRequest.getCurrentHP();
         int enemyCurrentHP = enemy.getMaxHP();
-        int heroATK = fightRequest.getATK();
+        int heroATK = fightRequest.getAtk();
         int enemyATK = enemy.getAtk();
 
         StringBuilder battleLog = new StringBuilder();

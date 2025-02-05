@@ -1,18 +1,18 @@
-package com.example;
+package com.example.config;
 
 import org.springframework.amqp.core.Queue;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
 
     @Bean
-    public Queue updateHeroQueue() {
-        return new Queue("update-hero-queue", true);
+    public Queue logsQueue() {
+        return new Queue("logs-queue", true);
     }
 
     @Bean

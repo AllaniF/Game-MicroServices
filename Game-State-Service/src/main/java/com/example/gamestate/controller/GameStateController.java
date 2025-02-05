@@ -15,23 +15,15 @@ public class GameStateController {
     @Autowired
     private GameStateService gameStateService;
 
-    // Store full game state
-    @PostMapping
-    public String storeGame(@RequestBody Game game) {
-        gameStateService.saveGame(game);
-        return "Game state saved successfully!";
-    }
-
-    // Retrieve full game state
-    @GetMapping
-    public Game getGame() {
-        return gameStateService.getGame();
+    @GetMapping("/new-game")
+    public String createNewGame() {
+        gameStateService.createGame();
+        return "New game created successfully!";
     }
 
     // Store hero separately
     @PostMapping("/selected-hero")
     public String storeHero(@RequestBody Hero hero) {
-        hero.setCurrentHP(hero.getMaxHP());
         gameStateService.saveHero(hero);
         gameStateService.sendLogsToQueue("Hero saved successfully!");
         return "Hero saved successfully!";
@@ -59,8 +51,7 @@ public class GameStateController {
 
     @PostMapping("/next-position")
     public NextPositionResponse getNextPosition(@RequestBody Direction directionRequest) {
-        NextPositionResponse nextPositionResponse = gameStateService
-                .getNextPosition(directionRequest.getDirection(), gameStateService.getGame());
+        NextPositionResponse nextPositionResponse = gameStateService.move(directionRequest.getDirection());
         gameStateService.sendLogsToQueue("Next position calculated successfully!");
         return nextPositionResponse;
     }

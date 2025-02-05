@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>Map-Service</artifactId>
+    <artifactId>Log-Service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Map-Service</name>
-    <description>Map-Service</description>
+    <name>Log-Service</name>
+    <description>Log-Service</description>
     <url/>
     <licenses>
         <license/>
@@ -50,21 +50,17 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- PostgreSQL JDBC Driver -->
+        <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
-
-        <!-- Spring Boot Starter for JSON Binding -->
+        <!-- Lombok (optional, to reduce boilerplate code) -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vladmihalcea</groupId>
-            <artifactId>hibernate-types-60</artifactId>
-            <version>2.21.1</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.amqp</groupId>

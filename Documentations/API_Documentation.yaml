@@ -4,7 +4,7 @@ info:
   description: API documentation for the game backend services.
   version: 1.0.0
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:5173
     description: Server for Frontend service
   - url: http://localhost:8001/game-state/
     description: Server for Game State service
@@ -14,6 +14,8 @@ servers:
     description: Server for Fight service
   - url: http://localhost:8004/map/
     description: Server for Map service
+  - url: http://localhost:8005/log
+    description: Server for Log Service
 paths:
   /fight/calculate:
     post:
@@ -129,6 +131,13 @@ paths:
       summary: Get a list of enemies
       tags:
         - Entity
+      parameters:
+        - name: heroID
+          in: query
+          required: true
+          description: The ID of the hero to send to the log queue
+          schema:
+            type: integer
       responses:
         200:
           description: List of enemies
@@ -147,14 +156,26 @@ paths:
                       type: integer
                     dunjonNb:
                       type: integer
-                    id:
-                      type: integer
                     maxHP:
                       type: integer
                     gold:
                       type: number
                     atk:
                       type: number
+
+  /game-state/new-game:
+    get:
+      summary: Create a new game
+      tags:
+        - Game State
+      responses:
+        200:
+          description: New game created
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: New game created successfully!
 
   /game-state/selected-hero:
     post:
@@ -320,43 +341,81 @@ paths:
                 example: New stats for hero updated successfully!
 
   /logs:
-    post:
-      summary: Save log information
+    get:
+      summary: Get all logs sorted by timestamp
       tags:
         - Logs
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                logId:
-                  type: integer
-                message:
-                  type: string
-                timestamp:
-                  type: string
-              required:
-                - logId
-                - message
-                - timestamp
+      description: |
+        Retrieves all logs in chronological order.
+        Logs with `"heroID": 0` are **not related to any hero**.
       responses:
         200:
-          description: Log saved successfully
+          description: List of all logs sorted chronologically
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    heroID:
+                      type: integer
+                      description: "0 indicates a log not related to a hero"
+                    timestamp:
+                      type: string
+                      format: date-time
+                    log:
+                      type: string
+
+  /logs/hero/{heroID}:
+    get:
+      summary: Get logs for a specific hero sorted by timestamp
+      tags:
+        - Logs
+      description: |
+        Retrieves logs for a **specific hero** in chronological order.
+        If `"heroID": 0`, the logs are **not related to any specific hero**.
+      parameters:
+        - name: heroID
+          in: path
+          required: true
+          description: The ID of the hero (0 for non-hero related logs)
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of logs for the specified hero
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    heroID:
+                      type: integer
+                      description: "0 indicates a log not related to a hero"
+                    timestamp:
+                      type: string
+                      format: date-time
+                    log:
+                      type: string
+        404:
+          description: No logs found for the specified hero
+
 
   /map:
     get:
       summary: Get a random map
       tags:
         - Map
+      parameters:
+        - name: heroID
+          in: query
+          required: true
+          description: The ID of the hero to send to log queue
+          schema:
+            type: integer
       responses:
         200:
           description: Random map selected

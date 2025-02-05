@@ -1,7 +1,13 @@
-package com.example;
+package com.example.service;
 
+import com.example.dto.LogDTO;
+import com.example.model.Entity;
+import com.example.repository.EntityRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,8 +17,11 @@ public class EntityService {
 
     private final EntityRepository entityRepository;
 
-    public EntityService(EntityRepository entityRepository) {
+    private final RabbitTemplate rabbitTemplate;
+
+    public EntityService(EntityRepository entityRepository, RabbitTemplate rabbitTemplate) {
         this.entityRepository = entityRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<Entity> getAllHeroes() {
@@ -58,22 +67,19 @@ public class EntityService {
         }
     }
 
-    public Entity updateHero(Entity entityDetails) { // Take the whole entity as input
-        Optional<Entity> entity = entityRepository.findById(entityDetails.getId()); //Get by id from the body
-        if (entity.isPresent()) {
-            Entity updatedEntity = entity.get();
-            updatedEntity.setLevel(entityDetails.getLevel());
-            updatedEntity.setDunjonNb(entityDetails.getDunjonNb());
-            updatedEntity.setMaxHP(entityDetails.getMaxHP());
-            updatedEntity.setGold(entityDetails.getGold());
-            updatedEntity.setAtk(entityDetails.getAtk());
-            return entityRepository.save(updatedEntity);
-        } else {
-            throw new RuntimeException("Hero not found with id " + entityDetails.getId()); // Use the ID from the body
-        }
-    }
-
     public List<Entity> getAllEnemies() {
         return entityRepository.findByType("Enemy");
+    }
+
+    public void sendLogsToQueue(String log, Integer heroID) {
+        LogDTO logDTO = new LogDTO();
+
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+
+        logDTO.setTimestamp(timestamp);
+        logDTO.setId(heroID);
+        logDTO.setLog(log);
+
+        rabbitTemplate.convertAndSend("logs-queue", logDTO);
     }
 }
