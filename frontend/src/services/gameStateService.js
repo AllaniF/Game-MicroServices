@@ -31,3 +31,13 @@ export const moveHero = async (direction) => {
     throw error;
   }
 };
+
+export const newGame = async () => {
+  try {
+    const response = await gameStateApi.get("/new-game");
+    return response.data;
+  } catch (error) {
+    console.error("Error starting new game:", error);
+    throw error;
+  }
+}
