@@ -45,7 +45,7 @@ public class FightService {
     private FightResult simulateFight(FightRequest fightRequest, Enemy enemy) {
         int heroCurrentHP = fightRequest.getCurrentHP();
         int enemyCurrentHP = enemy.getMaxHP();
-        int heroATK = fightRequest.getATK();
+        int heroATK = fightRequest.getAtk();
         int enemyATK = enemy.getAtk();
 
         StringBuilder battleLog = new StringBuilder();
