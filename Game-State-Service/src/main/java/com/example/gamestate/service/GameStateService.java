@@ -48,6 +48,7 @@ public class GameStateService {
         if (game == null) {
             throw new IllegalStateException("No existing game found. Create a game before adding a hero.");
         }
+        hero.setCurrentHP(hero.getMaxHP());
         game.setHero(hero);
         saveGame(game);
     }
@@ -71,17 +72,39 @@ public class GameStateService {
         return game != null ? game.getGameMap() : null;
     }
 
-    public NextPositionResponse getNextPosition(String direction, Game game) {
-        // Step 1: Fetch map from Redis
+    public NextPositionResponse move(String direction, Game game) {
+        NextPositionResponse response = getNextPosition(game, direction);
+
+        // Randomly determine if there is a fight
+        isFighting(response);
+
+
+        Hero hero = game.getHero();
+        response.setCurrentHP(hero.getCurrentHP());
+        response.setAtk(hero.getAtk());
+
+        return response;
+    }
+
+    private Position getNewPosition(Game game, String direction) {
+        Position current = game.getGameMap().getCurrentPosition();
+
+        return switch (direction.toLowerCase()) {
+            case "up" -> new Position(current.getX(), current.getY() - 1); // Move up (decrease y)
+            case "down" -> new Position(current.getX(), current.getY() + 1); // Move down (increase y)
+            case "right" -> new Position(current.getX() + 1, current.getY()); // Move right (increase x)
+            case "left" -> new Position(current.getX() - 1, current.getY()); // Move left (decrease x)
+            default -> throw new IllegalArgumentException("Invalid direction");
+        };
+    }
+
+    private NextPositionResponse getNextPosition(Game game, String direction) {
         GameMap map = game.getGameMap();
-
-        // Step 2: Check if direction is valid (pseudocode, adapt as needed)
         Position currentPosition = map.getCurrentPosition();
-        Position newPosition = getNewPosition(currentPosition, direction);
+        Position newPosition = getNewPosition(game, direction);
 
-        // Step 3: Create the response
         NextPositionResponse response = new NextPositionResponse();
-        
+
         if (Objects.equals(map.isValidMove(newPosition), "Invalid move")) {
             response.setNextPosition(currentPosition);
             response.setFinished(false);
@@ -96,33 +119,12 @@ public class GameStateService {
             saveMap(game.getGameMap());
             response.setFinished(false);
         }
-
-        // Step 4: Randomly determine if there is a fight
-        // TODO :
-        //  choose fight probability
-        //  remove fight if stay on same position
-        boolean isFighting = new Random().nextBoolean();  // 50% chance for a fight
-
-        // Step 5: Fetch hero from the game
-        Hero hero = game.getHero();
-
-
-        response.setFighting(isFighting);
-        response.setCurrentHP(hero.getCurrentHP());
-        response.setAtk(hero.getAtk());
-
         return response;
     }
 
-    private Position getNewPosition(Position current, String direction) {
-        // Implement logic to calculate new position based on direction (e.g., "up", "down")
-        return switch (direction.toLowerCase()) {
-            case "up" -> new Position(current.getX(), current.getY() - 1); // Move up (decrease y)
-            case "down" -> new Position(current.getX(), current.getY() + 1); // Move down (increase y)
-            case "right" -> new Position(current.getX() + 1, current.getY()); // Move right (increase x)
-            case "left" -> new Position(current.getX() - 1, current.getY()); // Move left (decrease x)
-            default -> throw new IllegalArgumentException("Invalid direction");
-        };
+    private void isFighting(NextPositionResponse response) {
+        boolean isFighting = new Random().nextBoolean();
+        response.setFighting(isFighting);
     }
 
     public void updateHeroHp(int remainingHp) {

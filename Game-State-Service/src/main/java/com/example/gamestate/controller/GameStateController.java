@@ -24,7 +24,6 @@ public class GameStateController {
     // Store hero separately
     @PostMapping("/selected-hero")
     public String storeHero(@RequestBody Hero hero) {
-        hero.setCurrentHP(hero.getMaxHP());
         gameStateService.saveHero(hero);
         gameStateService.sendLogsToQueue("Hero saved successfully!");
         return "Hero saved successfully!";
@@ -53,7 +52,7 @@ public class GameStateController {
     @PostMapping("/next-position")
     public NextPositionResponse getNextPosition(@RequestBody Direction directionRequest) {
         NextPositionResponse nextPositionResponse = gameStateService
-                .getNextPosition(directionRequest.getDirection(), gameStateService.getGame());
+                .move(directionRequest.getDirection(), gameStateService.getGame());
         gameStateService.sendLogsToQueue("Next position calculated successfully!");
         return nextPositionResponse;
     }
