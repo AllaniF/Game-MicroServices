@@ -15,17 +15,10 @@ public class GameStateController {
     @Autowired
     private GameStateService gameStateService;
 
-    // Store full game state
-    @PostMapping
-    public String storeGame(@RequestBody Game game) {
-        gameStateService.saveGame(game);
-        return "Game state saved successfully!";
-    }
-
-    // Retrieve full game state
-    @GetMapping
-    public Game getGame() {
-        return gameStateService.getGame();
+    @GetMapping("/new-game")
+    public String createNewGame() {
+        gameStateService.createGame();
+        return "New game created successfully!";
     }
 
     // Store hero separately
