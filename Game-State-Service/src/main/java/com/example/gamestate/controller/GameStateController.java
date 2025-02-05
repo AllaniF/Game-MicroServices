@@ -51,8 +51,7 @@ public class GameStateController {
 
     @PostMapping("/next-position")
     public NextPositionResponse getNextPosition(@RequestBody Direction directionRequest) {
-        NextPositionResponse nextPositionResponse = gameStateService
-                .move(directionRequest.getDirection(), gameStateService.getGame());
+        NextPositionResponse nextPositionResponse = gameStateService.move(directionRequest.getDirection());
         gameStateService.sendLogsToQueue("Next position calculated successfully!");
         return nextPositionResponse;
     }

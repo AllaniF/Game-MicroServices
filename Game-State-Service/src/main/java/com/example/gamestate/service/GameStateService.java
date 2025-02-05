@@ -72,7 +72,9 @@ public class GameStateService {
         return game != null ? game.getGameMap() : null;
     }
 
-    public NextPositionResponse move(String direction, Game game) {
+    public NextPositionResponse move(String direction) {
+        Game game = getGame();
+
         NextPositionResponse response = getNextPosition(game, direction);
 
         // Randomly determine if there is a fight
