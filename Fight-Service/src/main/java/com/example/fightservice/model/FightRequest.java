@@ -3,12 +3,12 @@ package com.example.fightservice.model;
 public class FightRequest {
     private final int heroId;
     private final int currentHP;
-    private final int ATK;
+    private final int atk;
 
-    public FightRequest(int heroId, int currentHP, int ATK) {
+    public FightRequest(int heroId, int currentHP, int atk) {
         this.heroId = heroId;
         this.currentHP = currentHP;
-        this.ATK = ATK;
+        this.atk = atk;
     }
 
     public int getHeroId() {
@@ -19,7 +19,7 @@ public class FightRequest {
         return currentHP;
     }
 
-    public int getATK() {
-        return ATK;
+    public int getAtk() {
+        return atk;
     }
 }
