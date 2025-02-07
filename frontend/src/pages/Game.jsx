@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import MapRenderer from "../components/MapRenderer";
-import Character from "../components/Character";
-import BattleModal from "../components/BattleModal";
-import UpgradeHero from "../components/UpgradeHero";
-import { useLocation } from "react-router-dom";
+import MapRenderer from "./components/MapRenderer";
+import Character from "./components/Character";
+import BattleModal from "./components/BattleModal";
+import UpgradeHero from "./components/UpgradeHero";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getMap } from "../services/mapService";
 import { moveHero, saveMap, saveSelectedHero, saveHeroHP, updateHero } from "../services/gameStateService";
-import { useNavigate } from "react-router-dom"
 
 const GamePage = () => {
   const navigate = useNavigate();
@@ -24,6 +23,7 @@ const GamePage = () => {
   const [isUpgradeActive, setIsUpgradeActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -83,15 +83,19 @@ const GamePage = () => {
   };  
   
   const handleBattleEnd = async (battleResult) => {
-    if (battleResult && battleResult.heroRemainingHP !== undefined) {
-      try {
-        await saveHeroHP(battleResult.heroRemainingHP);
-        setCurrentHP(battleResult.heroRemainingHP);
-      } catch (error) {
-        console.error("Error updating HP:", error);
+    if (battleResult) {
+      if (battleResult.result === "lose") {
+        setIsGameOver(true);
+      } else {
+        try {
+          await saveHeroHP(battleResult.heroRemainingHP);
+          setCurrentHP(battleResult.heroRemainingHP);
+        } catch (error) {
+          console.error("Error updating HP:", error);
+        }
       }
     }
-  };  
+  }; 
 
   const handleUpgradeClose = async (upgradeChoice) => {
     try {
@@ -110,7 +114,7 @@ const GamePage = () => {
       </div>
 
       <div style={{ width: "400px", padding: "20px", flexShrink: 0 }}>
-        {!isBattleActive && !isUpgradeActive && (
+        {!isBattleActive && !isUpgradeActive && !isGameOver && (
           <div style={{ textAlign: "center" }}>
             <h1>Hero Info</h1>
             {selectedHero && (
@@ -146,13 +150,20 @@ const GamePage = () => {
             hero={{ ...selectedHero, currentHP }} 
             onClose={(battleResult) => {
               setIsBattleActive(false);
-              handleBattleEnd(battleResult); // Llamar correctamente la función para actualizar currentHP
+              handleBattleEnd(battleResult);
             }} 
           />
         )}
 
         {isUpgradeActive && (
           <UpgradeHero hero={selectedHero} onClose={handleUpgradeClose} />
+        )}
+
+        {isGameOver && (
+          <div style={{ textAlign: "center", padding: "20px", border: "2px solid red", backgroundColor: "black", color: "white" }}>
+            <h1>Game Over</h1>
+            <button onClick={() => navigate("/")} style={{ marginTop: "20px", padding: "10px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer" }}>Close</button>
+          </div>
         )}
       </div>
     </div>

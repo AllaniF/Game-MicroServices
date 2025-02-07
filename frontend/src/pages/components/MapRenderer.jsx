@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { getMap } from "../services/mapService";
-import house from "../../assets/house.png";
-import tree1 from "../../assets/trees/tree1.png";
-import tree2 from "../../assets/trees/tree2.png";
-import tree3 from "../../assets/trees/tree3.png";
-import grass1 from "../../assets/grass/grass1.png";
-import grass2 from "../../assets/grass/grass2.png";
-import grass3 from "../../assets/grass/grass3.png";
-import flower1 from "../../assets/flowers/flower1.png";
-import flower2 from "../../assets/flowers/flower2.png";
+import house from "../../../assets/house.png";
+import tree1 from "../../../assets/trees/tree1.png";
+import tree2 from "../../../assets/trees/tree2.png";
+import tree3 from "../../../assets/trees/tree3.png";
+import grass1 from "../../../assets/grass/grass1.png";
+import grass2 from "../../../assets/grass/grass2.png";
+import grass3 from "../../../assets/grass/grass3.png";
+import flower1 from "../../../assets/flowers/flower1.png";
+import flower2 from "../../../assets/flowers/flower2.png";
 
 const trees = [tree1, tree2, tree3];
 const grassTiles = [grass1, grass2, grass3];

@@ -45,7 +45,7 @@ const UpgradeHero = ({ onClose }) => {
               ❤️ HP
             </button>
             <button 
-              onClick={() => handleUpgrade("atk")} // ✅ Corregido: "atk" en vez de ""
+              onClick={() => handleUpgrade("atk")}
               className="mt-4 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition"
             >
               ⚔️ ATK

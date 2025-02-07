@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { calculateFight } from "../services/fightService";
+import React, { useState } from "react";
+import { calculateFight } from "../../services/fightService";
 
 const BattleModal = ({ onClose, hero }) => {
   const [step, setStep] = useState(0);
@@ -19,7 +19,7 @@ const BattleModal = ({ onClose, hero }) => {
 
   const handleClose = () => {
     if (battleResult) {
-      onClose(battleResult); // Pasar el resultado al GamePage para actualizar currentHP
+      onClose(battleResult);
     } else {
       onClose();
     }
