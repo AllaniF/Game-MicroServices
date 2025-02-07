@@ -64,11 +64,12 @@ const GamePage = () => {
         setPosition(response.nextPosition);
       }
   
-      // Si el combate no inicia, currentHP se mantiene en maxHP
-      if (!response.isFighting) {
+      // ✅ Corregido: Solo resetear currentHP a maxHP si es el inicio del juego y no ha habido pelea
+      if (!response.isFighting && currentHP === selectedHero.maxHP) {
         setCurrentHP(selectedHero.maxHP);
       }
   
+      // ✅ Ahora currentHP se mantiene en el valor actualizado después de la batalla
       if (response.isFighting) {
         setIsBattleActive(true);
       }
@@ -79,7 +80,7 @@ const GamePage = () => {
     } catch (error) {
       setErrorMessage("Error moving hero. Please try again.");
     }
-  };
+  };  
   
   const handleBattleEnd = async (battleResult) => {
     if (battleResult && battleResult.heroRemainingHP !== undefined) {
