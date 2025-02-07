@@ -5,7 +5,7 @@ import BattleModal from "../components/BattleModal";
 import UpgradeHero from "../components/UpgradeHero";
 import { useLocation } from "react-router-dom";
 import { getMap } from "../services/mapService";
-import { moveHero, saveMap, saveSelectedHero } from "../services/gameStateService";
+import { moveHero, saveMap, saveSelectedHero, saveHeroHP } from "../services/gameStateService";
 
 const GamePage = () => {
   const location = useLocation();
@@ -56,19 +56,23 @@ const GamePage = () => {
     if (!isMapReady) {
       return;
     }
-
+  
     try {
       const response = await moveHero(direction);
-
+  
       if (response.nextPosition) {
         setPosition(response.nextPosition);
       }
-      if (response.currentHP !== undefined && response.currentHP !== null) {
-        setCurrentHP(response.currentHP > 0 ? response.currentHP : currentHP);
+  
+      // Si el combate no inicia, currentHP se mantiene en maxHP
+      if (!response.isFighting) {
+        setCurrentHP(selectedHero.maxHP);
       }
+  
       if (response.isFighting) {
         setIsBattleActive(true);
       }
+  
       if (response.isFinished) {
         alert("Level Completed!");
       }
@@ -76,6 +80,17 @@ const GamePage = () => {
       setErrorMessage("Error moving hero. Please try again.");
     }
   };
+  
+  const handleBattleEnd = async (battleResult) => {
+    if (battleResult && battleResult.heroRemainingHP !== undefined) {
+      try {
+        await saveHeroHP(battleResult.heroRemainingHP);
+        setCurrentHP(battleResult.heroRemainingHP);
+      } catch (error) {
+        console.error("Error updating HP:", error);
+      }
+    }
+  };  
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -117,7 +132,13 @@ const GamePage = () => {
         )}
 
         {isBattleActive && (
-          <BattleModal hero={{ ...selectedHero, currentHP }} onClose={() => setIsBattleActive(false)} />
+          <BattleModal 
+            hero={{ ...selectedHero, currentHP }} 
+            onClose={(battleResult) => {
+              setIsBattleActive(false);
+              handleBattleEnd(battleResult); // Llamar correctamente la función para actualizar currentHP
+            }} 
+          />
         )}
 
         {isUpgradeActive && (
