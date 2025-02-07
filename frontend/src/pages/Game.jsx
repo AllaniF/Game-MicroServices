@@ -5,9 +5,11 @@ import BattleModal from "../components/BattleModal";
 import UpgradeHero from "../components/UpgradeHero";
 import { useLocation } from "react-router-dom";
 import { getMap } from "../services/mapService";
-import { moveHero, saveMap, saveSelectedHero, saveHeroHP } from "../services/gameStateService";
+import { moveHero, saveMap, saveSelectedHero, saveHeroHP, updateHero } from "../services/gameStateService";
+import { useNavigate } from "react-router-dom"
 
 const GamePage = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const selectedHero = location.state?.hero || null;
 
@@ -32,7 +34,7 @@ const GamePage = () => {
         }
 
         await saveSelectedHero(selectedHero);
-        setCurrentHP(selectedHero.maxHP); // Asegurar que currentHP inicie con maxHP
+        setCurrentHP(selectedHero.maxHP);
 
         const data = await getMap(selectedHero.id);
 
@@ -64,18 +66,16 @@ const GamePage = () => {
         setPosition(response.nextPosition);
       }
   
-      // ✅ Corregido: Solo resetear currentHP a maxHP si es el inicio del juego y no ha habido pelea
       if (!response.isFighting && currentHP === selectedHero.maxHP) {
         setCurrentHP(selectedHero.maxHP);
       }
   
-      // ✅ Ahora currentHP se mantiene en el valor actualizado después de la batalla
       if (response.isFighting) {
         setIsBattleActive(true);
       }
   
       if (response.isFinished) {
-        alert("Level Completed!");
+        setIsUpgradeActive(true);
       }
     } catch (error) {
       setErrorMessage("Error moving hero. Please try again.");
@@ -90,6 +90,15 @@ const GamePage = () => {
       } catch (error) {
         console.error("Error updating HP:", error);
       }
+    }
+  };  
+
+  const handleUpgradeClose = async (upgradeChoice) => {
+    try {
+      await updateHero(upgradeChoice);
+      navigate("/");
+    } catch (error) {
+      console.error("Error updating hero stats:", error);
     }
   };  
 
@@ -143,7 +152,7 @@ const GamePage = () => {
         )}
 
         {isUpgradeActive && (
-          <UpgradeHero hero={selectedHero} onClose={() => setIsUpgradeActive(false)} />
+          <UpgradeHero hero={selectedHero} onClose={handleUpgradeClose} />
         )}
       </div>
     </div>

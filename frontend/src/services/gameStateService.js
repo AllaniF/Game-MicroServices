@@ -25,6 +25,7 @@ export const saveMap = async (mapData) => {
 export const moveHero = async (direction) => {
   try {
     const response = await gameStateApi.post("/next-position", { direction });
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error moving hero:", error);
@@ -45,6 +46,16 @@ export const newGame = async () => {
 export const saveHeroHP = async (remainingHP) => {
   try {
     const response = await gameStateApi.post("/combat-results", { remainingHP });
+    return response.data;
+  } catch (error) {
+    console.error("Error saving hero HP:", error);
+    throw error;
+  }
+}
+
+export const updateHero = async (upgrade) => {
+  try {
+    const response = await gameStateApi.post("/upgrade-hero", { upgrade });
     return response.data;
   } catch (error) {
     console.error("Error saving hero HP:", error);
