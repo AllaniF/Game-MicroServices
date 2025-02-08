@@ -2,7 +2,7 @@ import { gameStateApi } from "./api";
 
 export const saveSelectedHero = async (heroData) => {
   try {
-    const response = await gameStateApi.post("/selected-hero", {heroData});
+    const response = await gameStateApi.post("/selected-hero", heroData);
     return response.data;
   } catch (error) {
     console.error("Error saving selected hero:", error);
